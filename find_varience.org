@@ -1,0 +1,194 @@
+#+title: Find Varience
+#+PROPERTY: header-args:R :exports both
+
+* Dataset representation
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_sample.R\");" :colnames yes
+
+i've prepared a dataset that have following columnso
+
+#+name: dataframe_description
+#+begin_src R :results list :colnames no
+names(test_df) %>% sort()
+#+end_src
+
+#+RESULTS: dataframe_description
+- baseLog.agent_distance_traveleds
+- baseLog.agent_ple_energys
+- baseLog.agent_time_enableds
+- baseLog.collisionTimes
+- baseParameters
+- randomLog.agent_distance_traveleds
+- randomLog.agent_ple_energys
+- randomLog.agent_time_enableds
+- randomLog.collisionTimes
+- randomParameters
+- truthyLog.agent_distance_traveleds
+- truthyLog.agent_ple_energys
+- truthyLog.agent_time_enableds
+- truthyLog.collisionTimes
+- truthyParameters
+
+
+This explains one simulation that will produces many trajectories. Each trajectory is one row here. And each trajectory is controlled by one parameter as input, and produce some measures as the output.
+
+#+name: base_log_content
+#+begin_src R
+head(test_df, 2) %>%
+  select(matches("base.*"))
+#+end_src
+
+#+RESULTS: base_log_content
+|    baseParameters | baseLog.agent_time_enableds | baseLog.collisionTimes | baseLog.agent_distance_traveleds | baseLog.agent_ple_energys |
+|-------------------+-----------------------------+------------------------+----------------------------------+---------------------------|
+| 0.378937751054764 |                   20.399975 |                     31 |                        19.564394 |                 70.164055 |
+| 0.077129989862442 |                   19.199993 |                     33 |                        21.058525 |                 73.094498 |
+
+* Replica Study
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames yes
+And in replication study, each trajectory is replicated three times. One is the base experiment, one is the replicate study with exactly the same parameter (called truthy). The other is simulated with random parameter from same distribution (called random).
+
+#+name: focused_time_columns
+#+begin_src R :results vector
+parameter_columns = grep("Parameters$", names(test_df), value=TRUE)
+time_columns = grep("Log.*time", names(test_df), value=TRUE)
+
+c(parameter_columns, time_columns)
+#+end_src
+
+#+name: replica_view
+#+begin_src R :var cols=focused_time_columns
+cols_vector <- unlist(cols, use.names=FALSE)
+head(test_df, 2) %>%
+  select(all_of(cols_vector))
+#+end_src
+
+#+RESULTS: focused_time_columns
+| x                             |
+|-------------------------------|
+| baseParameters                |
+| truthyParameters              |
+| randomParameters              |
+| baseLog.agent_time_enableds   |
+| truthyLog.agent_time_enableds |
+| randomLog.agent_time_enableds |
+
+#+RESULTS: replica_view
+|    baseParameters |  truthyParameters |   randomParameters | baseLog.agent_time_enableds | truthyLog.agent_time_enableds | randomLog.agent_time_enableds |
+|-------------------+-------------------+--------------------+-----------------------------+-------------------------------+-------------------------------|
+| 0.378937751054764 | 0.378937751054764 | 0.0981365665793419 |                   20.399975 |                     22.249947 |                     25.349899 |
+| 0.077129989862442 | 0.077129989862442 |  0.123686976730824 |                   19.199993 |                     27.449867 |                     20.099979 |
+
+This experiment assumes that input parameters follows a uniform distribution over its definition range. Now we can compute the variance of each output measurements. However this produces trivial result as all experiments' input are following the same distribution.
+
+#+name: measure_varience_check
+#+begin_src R :var cols=focused_time_columns
+cols_vector <- unlist(cols, use.names=FALSE)
+test_df %>%
+  select(all_of(cols_vector)) %>%
+  sapply(var, simplify=FALSE)
+#+end_src
+
+#+RESULTS: measure_varience_check
+|     baseParameters |   truthyParameters |   randomParameters | baseLog.agent_time_enableds | truthyLog.agent_time_enableds | randomLog.agent_time_enableds |
+|--------------------+--------------------+--------------------+-----------------------------+-------------------------------+-------------------------------|
+| 0.0843314741542152 | 0.0843314741542152 | 0.0828158690913527 |            108.301360407418 |              107.488060730483 |              106.921651154795 |
+
+#+name: brief_t_test
+#+begin_src R :results output
+print(t.test(test_df$baseLog.agent_time_enableds, test_df$randomLog.agent_time_enableds))
+#+end_src
+
+#+RESULTS: brief_t_test
+#+begin_example
+
+	Welch Two Sample t-test
+
+data:  test_df$baseLog.agent_time_enableds and test_df$randomLog.agent_time_enableds
+t = 0.9005, df = 29997, p-value = 0.3679
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.1269166  0.3426469
+sample estimates:
+mean of x mean of y
+ 28.43886  28.33100
+
+#+end_example
+
+* Law of total variance
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames yes
+#+begin_quote
+[[https://en.wikipedia.org/wiki/Law_of_total_variance][Wikipedia: Law of total variance]]
+
+'''The law of total variance''' is a fundamental result in _probability theory_ that expresses the variance of a random variable {{mvar|Y}} in terms of its conditional variances and conditional means given another random variable {{mvar|X}}. Informally, it states that the overall variability of {{mvar|Y}} can be split into an “unexplained” component (the average of within-group variances) and an “explained” component (the variance of group means).
+
+Formally, if {{mvar|X}} and {{mvar|Y}} are _random variables_ on the same _probability space_, and {{mvar|Y}} has finite _variance_, then:
+
+\[
+\operatorname{Var}(Y) = \operatorname{E}[\operatorname{Var}(Y \mid X)] + \operatorname{Var}(\operatorname{E}[Y \mid X])
+\]
+
+This identity is also known as the '''variance decomposition formula''', the '''conditional variance formula''', the '''law of iterated variances''', or colloquially as '''Eve’s law''',<ref/> in parallel to the “Adam’s law” naming for the _law of total expectation_.
+#+end_quote
+
+** Base conditional variance
+In our simulator measurement representation, variable X is essentially the control parameter (baseParameter...) and variable Y is some observations after the simulations and measuring process. In the most basic case, Y can be the corresponding measurement result itself (written as H, baseLog.agent_time_enableds...). In order to simplify to computation, we assume H has some mean \(\mu_x = E[H | X=x]\), and an universal variance \(\sigma^2 = \sigma_x^2 = Var(H | X=x)\).
+
+** Same control parameter difference variance
+Then we can define our second variance for \( Y \leftarrow (H - H') | X = x \). It has two replica observation $H$ and $H'$ both conditioned by the same $X=x$ In such case \( E[Y | X=x] \leftarrow 0 \) and \( Var(Y | X=x) \leftarrow 2 Var(H | X=x) = 2\sigma_x^2 \), and \( Var(Y) \leftarrow E[Var(Y|X=x)] = 2\sigma^2 \)
+
+** Random control parameter difference variance
+Then we have our third form of variance,\( Y \leftarrow H(X) - H'(X') \). In this case, \( Var(Y) = E[Var(Y | X, X')] + Var(E[ Y | X, X']) \). Since X and  X' follows the same distribution and iid.
+
+For the first part of $Var(Y)$
+
+Given conditional variance \( Var(Y | X, X') = \sigma_X^2 + \sigma_{X'}^2 \)
+
+In \( E[Var(Y | X, X')] \leftarrow E[\sigma_X^2] + E[\sigma_{X'}^2 = 2 E[\sigma_X^2] = \sigma^2 \)
+
+For second part of the $Var(Y)$
+
+Given conditional mean \( E[ Y | X, X' ] \leftarrow \mu_X - \mu_{X'} \).
+
+In \( Var(E[Y | X, X']) \leftarrow Var(\mu_X - \mu_{X'}) = 2 Var(\mu_X) \)
+
+Thus \( Var(Y) = 2\sigma^2 + 2Var(\mu_X)\)
+
+Thus the varience difference between random control parameter and same control parameter is exactly the **impact variance**. I define impact variance here as the part of Y measurements that is conditioned with X. The theory should still hold true if we relief the **universal variance assumption**, by replacing \(\sigma^2\) with \( E[\sigma_X^2]\), _needs prove_.
+
+* Evaluation
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames no :results scalar value
+Base variation $Var(Y)$ where Y = H | X.
+
+#+name: base-variation
+#+begin_src R 
+var(test_df$baseLog.agent_time_enableds)
+#+end_src
+
+#+RESULTS: base-variation
+: 108.301360407418
+
+Same control parameter difference variance
+#+name: replica-variation
+#+begin_src R
+test_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
+#+end_src
+
+#+RESULTS: replica-variation
+: 120.901463818191
+
+Random control parameter difference variance
+#+name: random-variation
+#+begin_src R
+test_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+#+end_src
+
+#+RESULTS: random-variation
+: 177.849795382586
+
+Then component the variance from (random-variation - replica-varoiation) = (56.948331565) comes from \( E[H | X=x] \) change over input range.
+
+
+# Local Variables:
+# org-babel-R-command: "nix run . -- --slave --no-save"
+# eval: (setq-local org-format-latex-options (plist-put org-format-latex-options :scale 1.2))
+# END:

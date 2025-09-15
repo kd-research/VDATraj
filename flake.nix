@@ -43,10 +43,6 @@
           ];
           
           shellHook = ''
-            echo "🔬 R environment for replica project"
-            echo "📊 Available R packages: RSQLite, jsonlite, dplyr, ggplot2, tidyr, readr"
-            echo "🗄️  SQLite tools available"
-            echo ""
             echo "To start R: r"
             echo "To load your function: source('get_data_from_db.R')"
           '';

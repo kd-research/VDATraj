@@ -1,5 +1,3 @@
-library(dplyr)
-
 #' Prepare variance data by unnesting nested columns from database
 #' 
 #' This function takes a data frame with nested list columns (from JSON/log parsing)
@@ -45,7 +43,4 @@ prepare_varience_data <- function(df) {
   return(expanded_df)
 }
 
-# TODO: This is for development purposes only. Remove this before merging.
-source("get_data_from_db.R")
-test_df <- get_data_from_db("sample_db.sqlite3")
-test_df <- prepare_varience_data(test_df)
+
