@@ -1,13 +1,14 @@
-#+title: Find Varience
+#+title: Find Variance
 #+PROPERTY: header-args:R :exports both
 
-* Dataset representation
+* Dataset Representation
 #+PROPERTY: header-args:R :prologue "source(\"prelude/test_sample.R\");" :colnames yes
 
-i've prepared a dataset that have following columnso
+I've prepared a dataset that has the following columns:
 
 #+name: dataframe_description
 #+begin_src R :results list :colnames no
+# Display all column names in the dataset, sorted alphabetically
 names(test_df) %>% sort()
 #+end_src
 
@@ -29,10 +30,11 @@ names(test_df) %>% sort()
 - truthyParameters
 
 
-This explains one simulation that will produces many trajectories. Each trajectory is one row here. And each trajectory is controlled by one parameter as input, and produce some measures as the output.
+This represents one simulation that produces many trajectories. Each trajectory is one row in our dataset. Each trajectory is controlled by one parameter as input and produces several measures as output.
 
 #+name: base_log_content
 #+begin_src R
+# Show first 2 rows of base experiment data
 head(test_df, 2) %>%
   select(matches("base.*"))
 #+end_src
@@ -43,12 +45,16 @@ head(test_df, 2) %>%
 | 0.378937751054764 |                   20.399975 |                     31 |                        19.564394 |                 70.164055 |
 | 0.077129989862442 |                   19.199993 |                     33 |                        21.058525 |                 73.094498 |
 
-* Replica Study
+* Replication Study
 #+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames yes
-And in replication study, each trajectory is replicated three times. One is the base experiment, one is the replicate study with exactly the same parameter (called truthy). The other is simulated with random parameter from same distribution (called random).
+In the replication study, each trajectory is replicated three times:
+1. The **base experiment** - original simulation
+2. The **truthy** replicate - exact same parameter as base
+3. The **random** replicate - parameter drawn from the same distribution
 
 #+name: focused_time_columns
 #+begin_src R :results vector
+# Extract parameter and time-related columns for analysis
 parameter_columns = grep("Parameters$", names(test_df), value=TRUE)
 time_columns = grep("Log.*time", names(test_df), value=TRUE)
 
@@ -57,6 +63,7 @@ c(parameter_columns, time_columns)
 
 #+name: replica_view
 #+begin_src R :var cols=focused_time_columns
+# Display parameter and time columns for the three experimental conditions
 cols_vector <- unlist(cols, use.names=FALSE)
 head(test_df, 2) %>%
   select(all_of(cols_vector))
@@ -78,10 +85,11 @@ head(test_df, 2) %>%
 | 0.378937751054764 | 0.378937751054764 | 0.0981365665793419 |                   20.399975 |                     22.249947 |                     25.349899 |
 | 0.077129989862442 | 0.077129989862442 |  0.123686976730824 |                   19.199993 |                     27.449867 |                     20.099979 |
 
-This experiment assumes that input parameters follows a uniform distribution over its definition range. Now we can compute the variance of each output measurements. However this produces trivial result as all experiments' input are following the same distribution.
+This experiment assumes that input parameters follow a uniform distribution over their definition range. We can compute the variance of each output measurement, but this produces trivial results since all experiments' inputs follow the same distribution.
 
-#+name: measure_varience_check
+#+name: measure_variance_check
 #+begin_src R :var cols=focused_time_columns
+# Calculate variance for each parameter and measurement column
 cols_vector <- unlist(cols, use.names=FALSE)
 test_df %>%
   select(all_of(cols_vector)) %>%
@@ -95,6 +103,7 @@ test_df %>%
 
 #+name: brief_t_test
 #+begin_src R :results output
+# Perform t-test between base and random measurements
 print(t.test(test_df$baseLog.agent_time_enableds, test_df$randomLog.agent_time_enableds))
 #+end_src
 
@@ -114,7 +123,7 @@ mean of x mean of y
 
 #+end_example
 
-* Law of total variance
+* Law of Total Variance
 #+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames yes
 #+begin_quote
 [[https://en.wikipedia.org/wiki/Law_of_total_variance][Wikipedia: Law of total variance]]
@@ -130,62 +139,93 @@ Formally, if {{mvar|X}} and {{mvar|Y}} are _random variables_ on the same _proba
 This identity is also known as the '''variance decomposition formula''', the '''conditional variance formula''', the '''law of iterated variances''', or colloquially as '''Eve’s law''',<ref/> in parallel to the “Adam’s law” naming for the _law of total expectation_.
 #+end_quote
 
-** Base conditional variance
-In our simulator measurement representation, variable X is essentially the control parameter (baseParameter...) and variable Y is some observations after the simulations and measuring process. In the most basic case, Y can be the corresponding measurement result itself (written as H, baseLog.agent_time_enableds...). In order to simplify to computation, we assume H has some mean \(\mu_x = E[H | X=x]\), and an universal variance \(\sigma^2 = \sigma_x^2 = Var(H | X=x)\).
+** Base Conditional Variance
+In our simulator measurement representation:
+- Variable \(X\) is the control parameter (e.g., baseParameter)
+- Variable \(Y\) represents observations after the simulation and measurement process
+- In the most basic case, \(Y\) can be the measurement result itself (denoted as \(H\), e.g., baseLog.agent_time_enableds)
 
-** Same control parameter difference variance
-Then we can define our second variance for \( Y \leftarrow (H - H') | X = x \). It has two replica observation $H$ and $H'$ both conditioned by the same $X=x$ In such case \( E[Y | X=x] \leftarrow 0 \) and \( Var(Y | X=x) \leftarrow 2 Var(H | X=x) = 2\sigma_x^2 \), and \( Var(Y) \leftarrow E[Var(Y|X=x)] = 2\sigma^2 \)
+To simplify the computation, we assume \(H\) has:
+- Mean: \(\mu_x = E[H | X=x]\)
+- Universal variance: \(\sigma^2 = \sigma_x^2 = \text{Var}(H | X=x)\)
 
-** Random control parameter difference variance
-Then we have our third form of variance,\( Y \leftarrow H(X) - H'(X') \). In this case, \( Var(Y) = E[Var(Y | X, X')] + Var(E[ Y | X, X']) \). Since X and  X' follows the same distribution and iid.
+** Same Control Parameter Difference Variance
+We define our second variance for \( Y \leftarrow (H - H') | X = x \), where:
+- \(H\) and \(H'\) are two replica observations
+- Both are conditioned by the same \(X=x\)
 
-For the first part of $Var(Y)$
+In this case:
+- \( E[Y | X=x] = 0 \) (expected difference is zero)
+- \( \text{Var}(Y | X=x) = 2 \text{Var}(H | X=x) = 2\sigma_x^2 \)
+- \( \text{Var}(Y) = E[\text{Var}(Y|X=x)] = 2\sigma^2 \)
 
-Given conditional variance \( Var(Y | X, X') = \sigma_X^2 + \sigma_{X'}^2 \)
+** Random Control Parameter Difference Variance
+Our third form of variance is \( Y \leftarrow H(X) - H'(X') \), where \(X\) and \(X'\) are independent parameters.
 
-In \( E[Var(Y | X, X')] \leftarrow E[\sigma_X^2] + E[\sigma_{X'}^2 = 2 E[\sigma_X^2] = \sigma^2 \)
+Using the law of total variance:
+\[ \text{Var}(Y) = E[\text{Var}(Y | X, X')] + \text{Var}(E[ Y | X, X']) \]
 
-For second part of the $Var(Y)$
+Since \(X\) and \(X'\) follow the same distribution and are i.i.d.:
 
-Given conditional mean \( E[ Y | X, X' ] \leftarrow \mu_X - \mu_{X'} \).
+For the first part of \(\text{Var}(Y)\):
 
-In \( Var(E[Y | X, X']) \leftarrow Var(\mu_X - \mu_{X'}) = 2 Var(\mu_X) \)
+Given conditional variance \( \text{Var}(Y | X, X') = \sigma_X^2 + \sigma_{X'}^2 \)
 
-Thus \( Var(Y) = 2\sigma^2 + 2Var(\mu_X)\)
+Then \( E[\text{Var}(Y | X, X')] \leftarrow E[\sigma_X^2] + E[\sigma_{X'}^2] = 2 E[\sigma_X^2] = 2\sigma^2 \)
 
-Thus the varience difference between random control parameter and same control parameter is exactly the **impact variance**. I define impact variance here as the part of Y measurements that is conditioned with X. The theory should still hold true if we relief the **universal variance assumption**, by replacing \(\sigma^2\) with \( E[\sigma_X^2]\), _needs prove_.
+For the second part of \(\text{Var}(Y)\):
 
-* Evaluation
+Given conditional mean \( E[ Y | X, X' ] \leftarrow \mu_X - \mu_{X'} \)
+
+Then \( \text{Var}(E[Y | X, X']) \leftarrow \text{Var}(\mu_X - \mu_{X'}) = 2 \text{Var}(\mu_X) \)
+
+Thus \( \text{Var}(Y) = 2\sigma^2 + 2\text{Var}(\mu_X)\)
+
+**Key Result:** The variance difference between random control parameter and same control parameter is exactly the **impact variance**.
+
+I define **impact variance** as the component of \(Y\) measurements that depends on the conditioning variable \(X\). This represents how much the control parameter \(X\) actually influences the output.
+
+*Note:* The theory should still hold if we relax the universal variance assumption by replacing \(\sigma^2\) with \( E[\sigma_X^2]\) (requires formal proof).
+
+* Empirical Evaluation
 #+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames no :results scalar value
-Base variation $Var(Y)$ where Y = H | X.
+
+** Base Variation
+Base variation \(\text{Var}(Y)\) where \(Y = H | X\):
 
 #+name: base-variation
 #+begin_src R 
+# Calculate base variation: Var(H|X) for base experiment
 var(test_df$baseLog.agent_time_enableds)
 #+end_src
 
 #+RESULTS: base-variation
 : 108.301360407418
 
-Same control parameter difference variance
+** Same Control Parameter Difference Variance
 #+name: replica-variation
 #+begin_src R
+# Calculate same control parameter difference variance: Var(H - H'|X=x)
 test_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
 #+end_src
 
 #+RESULTS: replica-variation
 : 120.901463818191
 
-Random control parameter difference variance
+** Random Control Parameter Difference Variance
 #+name: random-variation
 #+begin_src R
+# Calculate random control parameter difference variance: Var(H(X) - H'(X'))
 test_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
 #+end_src
 
 #+RESULTS: random-variation
 : 177.849795382586
 
-Then component the variance from (random-variation - replica-varoiation) = (56.948331565) comes from \( E[H | X=x] \) change over input range.
+** Impact Variance Calculation
+The variance component from (random-variation - replica-variation) = 56.948331565 represents the **impact variance** - the component that comes from \( E[H | X=x] \) changing over the input range.
+
+This quantifies how much the control parameter \(X\) actually influences the output measurements.
 
 
 # Local Variables:
