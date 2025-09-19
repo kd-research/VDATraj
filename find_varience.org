@@ -235,50 +235,52 @@ This section demonstrates the variance decomposition method with a synthetic dat
 ** Dataset Overview
 #+name: sin_dataframe_description
 #+begin_src R :results list :colnames no
-# Display all column names in the sinusoidal dataset, sorted alphabetically
-names(test_sin_df) %>% sort()
+# Display all column names in the sinusoidal dataset
+names(test_sin_df)
 #+end_src
 
 ** Parameter and Output Relationship
 #+name: sin_parameter_range
 #+begin_src R
 # Show parameter range and first few observations
-cat("Parameter range: [", min(test_sin_df$baseParameters), ",", max(test_sin_df$baseParameters), "]\n")
-head(test_sin_df, 3) %>%
-  select(baseParameters, baseLog.agent_time_enableds, truthyLog.agent_time_enableds, randomLog.agent_time_enableds)
+cat("Parameter range: [", min(test_sin_df$base_x), ",", max(test_sin_df$base_x), "]\n")
+cat("Output range: [", min(test_sin_df$base_y), ",", max(test_sin_df$base_y), "]\n")
+head(test_sin_df, 3)
 #+end_src
 
 ** Variance Analysis for Sinusoidal Function
 
 *** Base Variation
-Base variation \\(\\text{Var}(Y)\\) where \\(Y = H | X\\):
+Base variation \\(\\text{Var}(Y)\\) where \\(Y = h(X) + \text{noise}\\):
 
 #+name: sin-base-variation
 #+begin_src R 
-# Calculate base variation: Var(H|X) for base experiment
-var(test_sin_df$baseLog.agent_time_enableds)
+# Calculate base variation: Var(Y) for base experiment
+var(test_sin_df$base_y)
 #+end_src
 
 *** Same Control Parameter Difference Variance
 #+name: sin-replica-variation
 #+begin_src R
-# Calculate same control parameter difference variance: Var(H - H'|X=x)
-test_sin_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
+# Calculate same control parameter difference variance: Var(Y - Y'|X=x)
+# Both base_y and truthy_y use the same x values but different noise realizations
+(test_sin_df$base_y - test_sin_df$truthy_y) %>% var()
 #+end_src
 
 *** Random Control Parameter Difference Variance
 #+name: sin-random-variation
 #+begin_src R
-# Calculate random control parameter difference variance: Var(H(X) - H'(X'))
-test_sin_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+# Calculate random control parameter difference variance: Var(Y(X) - Y'(X'))
+# base_y and random_y use different x values
+(test_sin_df$base_y - test_sin_df$random_y) %>% var()
 #+end_src
 
 *** Impact Variance for Sinusoidal Function
 #+name: sin-impact-variance
 #+begin_src R
 # Calculate impact variance
-replica_var <- test_sin_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
-random_var <- test_sin_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+replica_var <- (test_sin_df$base_y - test_sin_df$truthy_y) %>% var()
+random_var <- (test_sin_df$base_y - test_sin_df$random_y) %>% var()
 impact_var <- random_var - replica_var
 
 cat("Replica variation:", replica_var, "\n")
@@ -295,50 +297,52 @@ This section demonstrates the variance decomposition method with a synthetic dat
 ** Dataset Overview
 #+name: constant_dataframe_description
 #+begin_src R :results list :colnames no
-# Display all column names in the constant dataset, sorted alphabetically
-names(test_constant_df) %>% sort()
+# Display all column names in the constant dataset
+names(test_constant_df)
 #+end_src
 
 ** Parameter Independence Check
 #+name: constant_parameter_range
 #+begin_src R
 # Show parameter range and first few observations
-cat("Parameter range: [", min(test_constant_df$baseParameters), ",", max(test_constant_df$baseParameters), "]\n")
-head(test_constant_df, 3) %>%
-  select(baseParameters, baseLog.agent_time_enableds, truthyLog.agent_time_enableds, randomLog.agent_time_enableds)
+cat("Parameter range: [", min(test_constant_df$base_x), ",", max(test_constant_df$base_x), "]\n")
+cat("Output range: [", min(test_constant_df$base_y), ",", max(test_constant_df$base_y), "]\n")
+head(test_constant_df, 3)
 #+end_src
 
 ** Variance Analysis for Constant Function
 
 *** Base Variation
-Base variation \\(\\text{Var}(Y)\\) where \\(Y = H | X\\):
+Base variation \\(\\text{Var}(Y)\\) where \\(Y = C + \text{noise}\\):
 
 #+name: constant-base-variation
 #+begin_src R 
-# Calculate base variation: Var(H|X) for base experiment
-var(test_constant_df$baseLog.agent_time_enableds)
+# Calculate base variation: Var(Y) for base experiment
+var(test_constant_df$base_y)
 #+end_src
 
 *** Same Control Parameter Difference Variance
 #+name: constant-replica-variation
 #+begin_src R
-# Calculate same control parameter difference variance: Var(H - H'|X=x)
-test_constant_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
+# Calculate same control parameter difference variance: Var(Y - Y'|X=x)
+# Both base_y and truthy_y use the same x values but different noise realizations
+(test_constant_df$base_y - test_constant_df$truthy_y) %>% var()
 #+end_src
 
 *** Random Control Parameter Difference Variance
 #+name: constant-random-variation
 #+begin_src R
-# Calculate random control parameter difference variance: Var(H(X) - H'(X'))
-test_constant_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+# Calculate random control parameter difference variance: Var(Y(X) - Y'(X'))
+# base_y and random_y use different x values (but output is still constant + noise)
+(test_constant_df$base_y - test_constant_df$random_y) %>% var()
 #+end_src
 
 *** Impact Variance for Constant Function
 #+name: constant-impact-variance
 #+begin_src R
 # Calculate impact variance
-replica_var <- test_constant_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
-random_var <- test_constant_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+replica_var <- (test_constant_df$base_y - test_constant_df$truthy_y) %>% var()
+random_var <- (test_constant_df$base_y - test_constant_df$random_y) %>% var()
 impact_var <- random_var - replica_var
 
 cat("Replica variation:", replica_var, "\n")
