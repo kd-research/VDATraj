@@ -227,6 +227,141 @@ The variance component from (random-variation - replica-variation) = 56.94833156
 
 This quantifies how much the control parameter \(X\) actually influences the output measurements.
 
+* Sinusoidal Mapping Function Analysis
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_sin_df.R\");" :colnames no :results scalar value
+
+This section demonstrates the variance decomposition method with a synthetic dataset where the mapping function is \\(h(x) = \sin(x) + \text{noise}\\). This provides a clear case where the control parameter \\(X\\) has a strong, non-linear influence on the output.
+
+** Dataset Overview
+#+name: sin_dataframe_description
+#+begin_src R :results list :colnames no
+# Display all column names in the sinusoidal dataset, sorted alphabetically
+names(test_sin_df) %>% sort()
+#+end_src
+
+** Parameter and Output Relationship
+#+name: sin_parameter_range
+#+begin_src R
+# Show parameter range and first few observations
+cat("Parameter range: [", min(test_sin_df$baseParameters), ",", max(test_sin_df$baseParameters), "]\n")
+head(test_sin_df, 3) %>%
+  select(baseParameters, baseLog.agent_time_enableds, truthyLog.agent_time_enableds, randomLog.agent_time_enableds)
+#+end_src
+
+** Variance Analysis for Sinusoidal Function
+
+*** Base Variation
+Base variation \\(\\text{Var}(Y)\\) where \\(Y = H | X\\):
+
+#+name: sin-base-variation
+#+begin_src R 
+# Calculate base variation: Var(H|X) for base experiment
+var(test_sin_df$baseLog.agent_time_enableds)
+#+end_src
+
+*** Same Control Parameter Difference Variance
+#+name: sin-replica-variation
+#+begin_src R
+# Calculate same control parameter difference variance: Var(H - H'|X=x)
+test_sin_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
+#+end_src
+
+*** Random Control Parameter Difference Variance
+#+name: sin-random-variation
+#+begin_src R
+# Calculate random control parameter difference variance: Var(H(X) - H'(X'))
+test_sin_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+#+end_src
+
+*** Impact Variance for Sinusoidal Function
+#+name: sin-impact-variance
+#+begin_src R
+# Calculate impact variance
+replica_var <- test_sin_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
+random_var <- test_sin_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+impact_var <- random_var - replica_var
+
+cat("Replica variation:", replica_var, "\n")
+cat("Random variation:", random_var, "\n")
+cat("Impact variance:", impact_var, "\n")
+cat("Impact variance ratio:", impact_var / random_var, "\n")
+#+end_src
+
+* Constant Mapping Function Analysis
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_constant_df.R\");" :colnames no :results scalar value
+
+This section demonstrates the variance decomposition method with a synthetic dataset where the mapping function is \\(h(x) = C + \text{noise}\\). This represents the null case where the control parameter \\(X\\) has no influence on the output - all variation comes from noise.
+
+** Dataset Overview
+#+name: constant_dataframe_description
+#+begin_src R :results list :colnames no
+# Display all column names in the constant dataset, sorted alphabetically
+names(test_constant_df) %>% sort()
+#+end_src
+
+** Parameter Independence Check
+#+name: constant_parameter_range
+#+begin_src R
+# Show parameter range and first few observations
+cat("Parameter range: [", min(test_constant_df$baseParameters), ",", max(test_constant_df$baseParameters), "]\n")
+head(test_constant_df, 3) %>%
+  select(baseParameters, baseLog.agent_time_enableds, truthyLog.agent_time_enableds, randomLog.agent_time_enableds)
+#+end_src
+
+** Variance Analysis for Constant Function
+
+*** Base Variation
+Base variation \\(\\text{Var}(Y)\\) where \\(Y = H | X\\):
+
+#+name: constant-base-variation
+#+begin_src R 
+# Calculate base variation: Var(H|X) for base experiment
+var(test_constant_df$baseLog.agent_time_enableds)
+#+end_src
+
+*** Same Control Parameter Difference Variance
+#+name: constant-replica-variation
+#+begin_src R
+# Calculate same control parameter difference variance: Var(H - H'|X=x)
+test_constant_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
+#+end_src
+
+*** Random Control Parameter Difference Variance
+#+name: constant-random-variation
+#+begin_src R
+# Calculate random control parameter difference variance: Var(H(X) - H'(X'))
+test_constant_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+#+end_src
+
+*** Impact Variance for Constant Function
+#+name: constant-impact-variance
+#+begin_src R
+# Calculate impact variance
+replica_var <- test_constant_df %>% { .$baseLog.agent_time_enableds - .$truthyLog.agent_time_enableds} %>% var()
+random_var <- test_constant_df %>% { .$baseLog.agent_time_enableds - .$randomLog.agent_time_enableds } %>% var()
+impact_var <- random_var - replica_var
+
+cat("Replica variation:", replica_var, "\n")
+cat("Random variation:", random_var, "\n")
+cat("Impact variance:", impact_var, "\n")
+cat("Impact variance ratio:", impact_var / random_var, "\n")
+#+end_src
+
+** Comparison Summary
+
+The three datasets demonstrate different scenarios:
+
+1. **Original dataset**: Real simulation data with moderate parameter influence
+2. **Sinusoidal function**: Strong non-linear parameter influence (\\(h(x) = \sin(x) + \text{noise}\\))
+3. **Constant function**: No parameter influence (\\(h(x) = C + \text{noise}\\))
+
+The impact variance should be:
+- **Highest** for the sinusoidal function (strong parameter dependency)
+- **Near zero** for the constant function (no parameter dependency) 
+- **Moderate** for the original dataset (real-world parameter influence)
+
+This demonstrates how the variance decomposition method can quantify the degree to which control parameters actually influence experimental outcomes.
+
 
 # Local Variables:
 # org-babel-R-command: "nix run . -- --slave --no-save"
