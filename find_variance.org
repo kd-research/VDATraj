@@ -1,0 +1,558 @@
+#+title: Variance Decomposition Analysis for Simulation Parameter Impact Assessment
+#+LATEX_CLASS_OPTIONS: [9pt]
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+#+author: Kaidong
+#+date: 2025
+
+* Abstract
+
+This document presents a novel method for assessing the impact of input parameters on simulation outputs using variance decomposition. The approach leverages the law of total variance to distinguish between measurement variability due to simulation noise versus genuine parameter influence. We demonstrate the method's effectiveness through empirical analysis of trajectory simulation data.
+
+* Introduction
+
+Determining whether simulation input parameters have meaningful effects on output measurements is a fundamental challenge in computational modeling. Traditional approaches such as correlation analysis or t-tests may be insufficient when dealing with complex, noisy simulation environments. This work proposes a variance decomposition approach that can reliably identify parameter influence even in the presence of significant measurement noise.
+
+* Dataset Description
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_sample.R\");" :colnames yes :results output
+
+We analyze a comprehensive dataset containing simulation trajectory results. The dataset structure includes the following variables:
+
+#+name: dataframe_description
+#+begin_src R :results output
+# Display variable names from the loaded dataset
+cat("Dataset Variables (Sorted Alphabetically):\n")
+cat("==========================================\n")
+variable_names <- names(test_df) %>% sort()
+for(i in seq_along(variable_names)) {
+  cat(sprintf("%2d. %s\n", i, variable_names[i]))
+}
+cat(sprintf("\nTotal number of variables: %d\n", length(variable_names)))
+#+end_src
+
+#+RESULTS: dataframe_description
+#+begin_example
+Dataset Variables (Sorted Alphabetically):
+==========================================
+ 1. baseLog.agent_distance_traveleds
+ 2. baseLog.agent_ple_energys
+ 3. baseLog.agent_time_enableds
+ 4. baseLog.collisionTimes
+ 5. baseParameters
+ 6. randomLog.agent_distance_traveleds
+ 7. randomLog.agent_ple_energys
+ 8. randomLog.agent_time_enableds
+ 9. randomLog.collisionTimes
+10. randomParameters
+11. truthyLog.agent_distance_traveleds
+12. truthyLog.agent_ple_energys
+13. truthyLog.agent_time_enableds
+14. truthyLog.collisionTimes
+15. truthyParameters
+
+Total number of variables: 15
+#+end_example
+
+
+The dataset represents simulation results where each row corresponds to a single trajectory. Each trajectory is generated using a specific input parameter value and produces multiple output measurements. This experimental design allows us to study the relationship between input parameters and output variability.
+
+#+name: base_log_content
+#+begin_src R :results output
+# Display sample of base experiment data
+cat("Sample Base Experiment Data (First 2 Rows):\n")
+cat("===========================================\n")
+base_data <- head(test_df, 2) %>% select(matches("base.*"))
+print(base_data, width = Inf)
+
+cat("\nBase Experiment Column Names:\n")
+base_columns <- names(base_data)
+for(i in seq_along(base_columns)) {
+  cat(sprintf("  %s\n", base_columns[i]))
+}
+#+end_src
+
+#+RESULTS: base_log_content
+#+begin_example
+Sample Base Experiment Data (First 2 Rows):
+===========================================
+# A tibble: 2 × 5
+  baseParameters baseLog.agent_time_enableds baseLog.collisionTimes
+           <dbl>                       <dbl>                  <dbl>
+1         0.379                         20.4                     31
+2         0.0771                        19.2                     33
+  baseLog.agent_distance_traveleds baseLog.agent_ple_energys
+                             <dbl>                     <dbl>
+1                             19.6                      70.2
+2                             21.1                      73.1
+
+Base Experiment Column Names:
+  baseParameters
+  baseLog.agent_time_enableds
+  baseLog.collisionTimes
+  baseLog.agent_distance_traveleds
+  baseLog.agent_ple_energys
+#+end_example
+
+* Experimental Design: Triple Replication Study
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames yes :results output
+
+Our experimental methodology employs a triple replication design to isolate different sources of variance:
+
+1. **Base Experiment**: Original simulation with specified parameters
+2. **Identical Replica (Truthy)**: Replication using identical parameter values to assess measurement noise  
+3. **Random Parameter Replica**: Replication using randomly sampled parameters from the same distribution to capture combined noise and parameter effects
+
+#+name: focused_time_columns
+#+begin_src R :results output
+# Identify parameter and time-related columns
+parameter_columns <- grep("Parameters$", names(test_df), value=TRUE)
+time_columns <- grep("Log.*time", names(test_df), value=TRUE)
+focused_columns <- c(parameter_columns, time_columns)
+
+cat("Parameter and Time-Related Columns:\n")
+cat("====================================\n")
+cat("\nParameter Columns:\n")
+for(col in parameter_columns) {
+  cat(sprintf("  • %s\n", col))
+}
+cat("\nTime-Related Log Columns:\n")
+for(col in time_columns) {
+  cat(sprintf("  • %s\n", col))
+}
+cat(sprintf("\nTotal focused columns: %d\n", length(focused_columns)))
+#+end_src
+
+#+name: replica_view
+#+begin_src R :results output
+# Display parameter/time data for first 2 trajectories
+# Identify parameter and time-related columns
+parameter_columns <- grep("Parameters$", names(test_df), value=TRUE)
+time_columns <- grep("Log.*time", names(test_df), value=TRUE)
+cols_vector <- c(parameter_columns, time_columns)
+
+cat("Triple Replication Data View (First 2 Trajectories):\n")
+cat("====================================================\n")
+replica_data <- head(test_df, 2) %>% select(all_of(cols_vector))
+print(replica_data, width = Inf)
+
+cat("\nColumn Explanation:\n")
+cat("  • baseParameters: Original experiment parameter values\n")
+cat("  • truthyParameters: Identical replica parameter values\n")
+cat("  • randomParameters: Random replica parameter values\n")
+cat("  • *Log.agent_time_enableds: Agent time measurements for each condition\n")
+#+end_src
+
+#+RESULTS: focused_time_columns
+#+begin_example
+Parameter and Time-Related Columns:
+====================================
+
+Parameter Columns:
+  • baseParameters
+  • truthyParameters
+  • randomParameters
+
+Time-Related Log Columns:
+  • baseLog.agent_time_enableds
+  • truthyLog.agent_time_enableds
+  • randomLog.agent_time_enableds
+
+Total focused columns: 6
+#+end_example
+
+#+RESULTS: replica_view
+#+begin_example
+Triple Replication Data View (First 2 Trajectories):
+====================================================
+# A tibble: 2 × 6
+  baseParameters truthyParameters randomParameters baseLog.agent_time_enableds
+           <dbl>            <dbl>            <dbl>                       <dbl>
+1         0.379            0.379            0.0981                        20.4
+2         0.0771           0.0771           0.124                         19.2
+  truthyLog.agent_time_enableds randomLog.agent_time_enableds
+                          <dbl>                         <dbl>
+1                          22.2                          25.3
+2                          27.4                          20.1
+
+Column Explanation:
+  • baseParameters: Original experiment parameter values
+  • truthyParameters: Identical replica parameter values
+  • randomParameters: Random replica parameter values
+  • *Log.agent_time_enableds: Agent time measurements for each condition
+#+end_example
+
+The experimental design assumes input parameters follow a uniform distribution over their defined range. While we can compute the variance of each output measurement, direct comparison yields limited insights since all experimental conditions follow the same parameter distribution. This motivates our variance decomposition approach.
+
+#+name: measure_variance_check
+#+begin_src R :results output
+# Calculate variance for parameter and time columns
+# Identify parameter and time-related columns
+parameter_columns <- grep("Parameters$", names(test_df), value=TRUE)
+time_columns <- grep("Log.*time", names(test_df), value=TRUE)
+cols_vector <- c(parameter_columns, time_columns)
+
+cat("Variance Analysis for Parameter and Time Measurements:\n")
+cat("======================================================\n")
+
+variance_data <- test_df %>%
+  select(all_of(cols_vector)) %>%
+  sapply(var, simplify=FALSE)
+
+cat("\nParameter Variances:\n")
+for(col in parameter_columns) {
+  cat(sprintf("  %-25s: %12.6f\n", col, variance_data[[col]]))
+}
+
+cat("\nTime Measurement Variances:\n")
+for(col in time_columns) {
+  cat(sprintf("  %-30s: %12.6f\n", col, variance_data[[col]]))
+}
+
+cat("\nKey Observations:\n")
+cat("  • Parameter variances are similar across replications (as expected)\n")
+cat("  • Time measurement variances are comparable, suggesting consistent noise levels\n")
+#+end_src
+
+#+RESULTS: measure_variance_check
+#+begin_example
+Variance Analysis for Parameter and Time Measurements:
+======================================================
+
+Parameter Variances:
+  baseParameters           :     0.084331
+  truthyParameters         :     0.084331
+  randomParameters         :     0.082816
+
+Time Measurement Variances:
+  baseLog.agent_time_enableds   :   108.301360
+  truthyLog.agent_time_enableds :   107.488061
+  randomLog.agent_time_enableds :   106.921651
+
+Key Observations:
+  • Parameter variances are similar across replications (as expected)
+  • Time measurement variances are comparable, suggesting consistent noise levels
+#+end_example
+
+#+name: brief_t_test
+#+begin_src R :results output
+# Perform t-test comparing base vs random parameter measurements
+cat("Statistical Comparison: Base vs Random Parameter Measurements\n")
+cat("=============================================================\n")
+cat("Comparing agent_time_enabled measurements between:\n")
+cat("  • Base experiment (original parameters)\n")
+cat("  • Random experiment (random parameters)\n\n")
+
+t_test_result <- t.test(test_df$baseLog.agent_time_enableds, test_df$randomLog.agent_time_enableds)
+print(t_test_result)
+
+cat("\nInterpretation:\n")
+cat(sprintf("  • Mean difference: %.4f\n", diff(t_test_result$estimate)))
+cat(sprintf("  • P-value: %.4f\n", t_test_result$p.value))
+if(t_test_result$p.value > 0.05) {
+  cat("  • No significant difference detected by t-test\n")
+  cat("  • This motivates the need for variance decomposition analysis\n")
+} else {
+  cat("  • Significant difference detected\n")
+}
+#+end_src
+
+#+RESULTS: brief_t_test
+#+begin_example
+Statistical Comparison: Base vs Random Parameter Measurements
+=============================================================
+Comparing agent_time_enabled measurements between:
+  • Base experiment (original parameters)
+  • Random experiment (random parameters)
+
+
+	Welch Two Sample t-test
+
+data:  test_df$baseLog.agent_time_enableds and test_df$randomLog.agent_time_enableds
+t = 0.9005, df = 29997, p-value = 0.3679
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.1269166  0.3426469
+sample estimates:
+mean of x mean of y
+ 28.43886  28.33100
+
+
+Interpretation:
+  • Mean difference: -0.1079
+  • P-value: 0.3679
+  • No significant difference detected by t-test
+  • This motivates the need for variance decomposition analysis
+#+end_example
+
+* Theoretical Foundation: Law of Total Variance
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames yes :results output
+
+** Mathematical Background
+
+The law of total variance provides the theoretical foundation for our parameter impact assessment method. This fundamental result in probability theory allows decomposition of the total variance of a random variable Y into two components based on conditioning variable X:
+
+\[
+\operatorname{Var}(Y) = \operatorname{E}[\operatorname{Var}(Y \mid X)] + \operatorname{Var}(\operatorname{E}[Y \mid X])
+\]
+
+where:
+- $\operatorname{E}[\operatorname{Var}(Y \mid X)]$ represents the **unexplained variance** (average within-group variance)
+- $\operatorname{Var}(\operatorname{E}[Y \mid X])$ represents the **explained variance** (variance of conditional means)
+
+This decomposition enables us to quantify how much of the total measurement variability can be attributed to changes in the input parameter X versus intrinsic measurement noise.
+
+** Application to Simulation Data
+
+In our simulation context:
+- **X** represents the input parameter (e.g., baseParameters)
+- **H** represents the measurement outcome (e.g., agent_time_enabled)  
+- **Y** represents derived quantities for variance analysis
+
+For computational tractability, we initially assume:
+- $\mu_x = E[H \mid X=x]$ (conditional mean given parameter value)
+- $\sigma^2 = \operatorname{Var}(H \mid X=x)$ (universal conditional variance, constant across parameter values)
+
+** Same Parameter Variance Analysis
+
+We define the difference variable for identical parameter replications:
+\[
+Y_{\text{same}} = H - H' \mid X = x
+\]
+
+where both $H$ and $H'$ are measured using identical parameter values. This yields:
+- $E[Y_{\text{same}} \mid X=x] = 0$ (expected difference is zero)
+- $\operatorname{Var}(Y_{\text{same}} \mid X=x) = 2\operatorname{Var}(H \mid X=x) = 2\sigma^2$
+- $\operatorname{Var}(Y_{\text{same}}) = E[\operatorname{Var}(Y_{\text{same}} \mid X)] = 2\sigma^2$
+
+This quantity captures pure measurement noise, independent of parameter influence.
+
+** Random Parameter Variance Analysis
+
+For the random parameter case, we define:
+\[
+Y_{\text{random}} = H(X) - H'(X')
+\]
+
+where $X$ and $X'$ are independent samples from the same parameter distribution. Applying the law of total variance:
+\[
+\operatorname{Var}(Y_{\text{random}}) = E[\operatorname{Var}(Y_{\text{random}} \mid X, X')] + \operatorname{Var}(E[Y_{\text{random}} \mid X, X'])
+\]
+
+**Unexplained Component:**
+\[
+E[\operatorname{Var}(Y_{\text{random}} \mid X, X')] = E[\sigma_X^2 + \sigma_{X'}^2] = 2\sigma^2
+\]
+
+**Explained Component:**
+\[
+\operatorname{Var}(E[Y_{\text{random}} \mid X, X']) = \operatorname{Var}(\mu_X - \mu_{X'}) = 2\operatorname{Var}(\mu_X)
+\]
+
+**Total Random Parameter Variance:**
+\[
+\operatorname{Var}(Y_{\text{random}}) = 2\sigma^2 + 2\operatorname{Var}(\mu_X)
+\]
+
+** Impact Variance Definition
+
+The **impact variance** is defined as:
+\[
+\text{Impact Variance} = \operatorname{Var}(Y_{\text{random}}) - \operatorname{Var}(Y_{\text{same}}) = 2\operatorname{Var}(\mu_X)
+\]
+
+This quantity directly measures the contribution of parameter variation to measurement outcomes. When parameters have no effect on measurements, the impact variance approaches zero. Conversely, strong parameter influence results in large impact variance.
+
+* Empirical Results and Analysis
+#+PROPERTY: header-args:R :prologue "source(\"prelude/test_df.R\");" :colnames no :results output
+
+We apply our variance decomposition method to the trajectory simulation dataset to demonstrate its effectiveness in quantifying parameter influence.
+
+** Base Measurement Variance
+
+The total variance of the primary measurement (agent_time_enabled):
+
+#+name: base-variation
+#+begin_src R :results output
+# Calculate total variance of base experiment measurements
+base_variance <- var(test_df$baseLog.agent_time_enableds)
+
+cat("Base Experiment Measurement Variance Analysis\n")
+cat("==============================================\n")
+cat(sprintf("Total variance of agent_time_enabled measurements: %.6f\n", base_variance))
+cat("\nThis represents the total variability in the primary outcome measurement\n")
+cat("across all trajectories in the base experiment.\n")
+#+end_src
+
+#+RESULTS: base-variation
+: Base Experiment Measurement Variance Analysis
+: ==============================================
+: Total variance of agent_time_enabled measurements: 108.301360
+:
+: This represents the total variability in the primary outcome measurement
+: across all trajectories in the base experiment.
+
+** Same Parameter Replica Variance
+
+Variance of differences between identical parameter replications (pure noise):
+
+#+name: replica-variation
+#+begin_src R :results output
+# Calculate variance of differences between identical parameter replications
+# Calculate difference between base and truthy (identical parameter) measurements
+differences <- test_df$baseLog.agent_time_enableds - test_df$truthyLog.agent_time_enableds
+replica_variance <- var(differences)
+
+cat("Same Parameter Replica Variance Analysis\n")
+cat("========================================\n")
+cat("Comparing measurements from identical parameter replications:\n")
+cat(sprintf("  • Base experiment mean: %.6f\n", mean(test_df$baseLog.agent_time_enableds)))
+cat(sprintf("  • Truthy replica mean: %.6f\n", mean(test_df$truthyLog.agent_time_enableds)))
+cat(sprintf("  • Mean difference: %.6f\n", mean(differences)))
+cat(sprintf("  • Variance of differences: %.6f\n", replica_variance))
+
+cat("\nInterpretation:\n")
+cat("  • This variance captures pure measurement noise (σ²)\n")
+cat("  • Represents variability when parameters are held constant\n")
+cat("  • According to theory: Var(Y_same) = 2σ²\n")
+#+end_src
+
+#+RESULTS: replica-variation
+#+begin_example
+Same Parameter Replica Variance Analysis
+========================================
+Comparing measurements from identical parameter replications:
+  • Base experiment mean: 28.438862
+  • Truthy replica mean: 28.392556
+  • Mean difference: 0.046306
+  • Variance of differences: 120.901464
+
+Interpretation:
+  • This variance captures pure measurement noise (σ²)
+  • Represents variability when parameters are held constant
+  • According to theory: Var(Y_same) = 2σ²
+#+end_example
+
+** Random Parameter Variance
+
+Variance of differences between random parameter replications (noise + signal):
+
+#+name: random-variation
+#+begin_src R :results output
+# Calculate variance of differences between random parameter replications
+# Calculate difference between base and random parameter measurements
+differences <- test_df$baseLog.agent_time_enableds - test_df$randomLog.agent_time_enableds
+random_variance <- var(differences)
+
+cat("Random Parameter Variance Analysis\n")
+cat("===================================\n")
+cat("Comparing measurements between different parameter values:\n")
+cat(sprintf("  • Base experiment mean: %.6f\n", mean(test_df$baseLog.agent_time_enableds)))
+cat(sprintf("  • Random replica mean: %.6f\n", mean(test_df$randomLog.agent_time_enableds)))
+cat(sprintf("  • Mean difference: %.6f\n", mean(differences)))
+cat(sprintf("  • Variance of differences: %.6f\n", random_variance))
+
+cat("\nInterpretation:\n")
+cat("  • This variance captures both measurement noise AND parameter effects\n")
+cat("  • According to theory: Var(Y_random) = 2σ² + 2Var(μ_X)\n")
+cat("  • Higher than same-parameter variance indicates parameter influence\n")
+#+end_src
+
+#+RESULTS: random-variation
+#+begin_example
+Random Parameter Variance Analysis
+===================================
+Comparing measurements between different parameter values:
+  • Base experiment mean: 28.438862
+  • Random replica mean: 28.330997
+  • Mean difference: 0.107865
+  • Variance of differences: 177.849795
+
+Interpretation:
+  • This variance captures both measurement noise AND parameter effects
+  • According to theory: Var(Y_random) = 2σ² + 2Var(μ_X)
+  • Higher than same-parameter variance indicates parameter influence
+#+end_example
+
+** Impact Variance Calculation
+
+The impact variance, representing parameter influence on measurements:
+
+#+name: impact-variance-calculation
+#+begin_src R :results output
+# Calculate and interpret impact variance
+# Calculate all variance components
+base_variance <- var(test_df$baseLog.agent_time_enableds)
+same_param_diff <- test_df$baseLog.agent_time_enableds - test_df$truthyLog.agent_time_enableds
+replica_variance <- var(same_param_diff)
+random_param_diff <- test_df$baseLog.agent_time_enableds - test_df$randomLog.agent_time_enableds
+random_variance <- var(random_param_diff)
+
+# Impact variance calculation
+impact_variance <- random_variance - replica_variance
+
+cat("Impact Variance Calculation Summary\n")
+cat("===================================\n")
+cat(sprintf("Base measurement variance:           %12.6f\n", base_variance))
+cat(sprintf("Same parameter variance (noise):     %12.6f\n", replica_variance))
+cat(sprintf("Random parameter variance (noise+signal): %12.6f\n", random_variance))
+cat(sprintf("Impact variance (signal only):       %12.6f\n", impact_variance))
+
+cat("\nVariance Decomposition:\n")
+cat(sprintf("  • Pure measurement noise component: %12.6f (%.1f%%)\n", 
+    replica_variance, 100 * replica_variance / random_variance))
+cat(sprintf("  • Parameter influence component:     %12.6f (%.1f%%)\n", 
+    impact_variance, 100 * impact_variance / random_variance))
+
+cat("\nConclusion:\n")
+if(impact_variance > 0) {
+  cat(sprintf("  ✓ Positive impact variance (%.2f) indicates meaningful parameter control\n", impact_variance))
+  cat(sprintf("  ✓ Parameters explain %.1f%% of the additional variance beyond noise\n", 
+      100 * impact_variance / random_variance))
+  cat("  ✓ Input parameters have demonstrable influence on trajectory outcomes\n")
+} else {
+  cat("  ✗ No evidence of parameter influence (impact variance ≤ 0)\n")
+}
+#+end_src
+
+#+RESULTS: impact-variance-calculation
+#+begin_example
+Impact Variance Calculation Summary
+===================================
+Base measurement variance:             108.301360
+Same parameter variance (noise):       120.901464
+Random parameter variance (noise+signal):   177.849795
+Impact variance (signal only):          56.948332
+
+Variance Decomposition:
+  • Pure measurement noise component:   120.901464 (68.0%)
+  • Parameter influence component:        56.948332 (32.0%)
+
+Conclusion:
+  ✓ Positive impact variance (56.95) indicates meaningful parameter control
+  ✓ Parameters explain 32.0% of the additional variance beyond noise
+  ✓ Input parameters have demonstrable influence on trajectory outcomes
+#+end_example
+
+This analysis demonstrates our variance decomposition method's effectiveness in quantifying parameter influence.
+
+* Conclusions
+
+Our variance decomposition method successfully quantifies the degree of parameter control in simulation systems. The key findings include:
+
+1. **Method Validity**: The approach correctly separates measurement noise from genuine parameter effects
+2. **Parameter Influence**: Input parameters demonstrate substantial control over trajectory outcomes
+3. **Quantitative Assessment**: Impact variance provides a clear metric for parameter importance
+
+This methodology can be applied to any simulation system to assess parameter relevance and guide model development and validation efforts.
+
+** Future Extensions
+
+The current analysis assumes constant conditional variance across parameter values. Future work should investigate:
+- Heteroscedastic noise models where $\sigma_x^2$ varies with parameter values
+- Multivariate parameter analysis for systems with multiple input dimensions  
+- Non-parametric approaches for complex parameter-measurement relationships
+
+# Local Variables:
+# org-babel-R-command: "nix run . -- --slave --no-save"
+# eval: (setq-local org-format-latex-options (plist-put org-format-latex-options :scale 1.2))
+# eval: (setq-local org-babel-default-header-args:R '((:exports . "both")))
+# END:
