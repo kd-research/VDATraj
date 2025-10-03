@@ -10,11 +10,18 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, flake-compat }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      flake-compat,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs { inherit system; };
-        
+
         # R environment with required packages
         rEnv = pkgs.rWrapper.override {
           packages = with pkgs.rPackages; [
@@ -34,14 +41,17 @@
 
         # Development shell
         devShells.default = pkgs.mkShell {
-          buildInputs = [
+          buildInputs = with pkgs; [
             rEnv
-            pkgs.sqlite
+            sqlite
             # Additional development tools
-            pkgs.git
-            pkgs.gnumake
+            git
+            gnumake
+            # latest TeX Live for R Markdown and reports
+            texliveFull
+            (python3.withPackages (ps: with ps; [ pygments ]))
           ];
-          
+
           shellHook = ''
             echo "To start R: r"
             echo "To load your function: source('get_data_from_db.R')"
@@ -53,5 +63,6 @@
           type = "app";
           program = "${rEnv}/bin/R";
         };
-      });
+      }
+    );
 }
