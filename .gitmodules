@@ -1,0 +1,3 @@
+[submodule "modules/cog-data"]
+	path = modules/cog-data
+	url = ../Cog-Dataset-Merge-Tool
