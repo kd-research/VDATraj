@@ -32,6 +32,9 @@
             ggplot2
             tidyr
             readr
+            # Testing packages
+            testthat
+            purrr
           ];
         };
       in
@@ -51,11 +54,6 @@
             texliveFull
             (python3.withPackages (ps: with ps; [ pygments ]))
           ];
-
-          shellHook = ''
-            echo "To start R: r"
-            echo "To load your function: source('get_data_from_db.R')"
-          '';
         };
 
         # Apps for easy access

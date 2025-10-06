@@ -33,12 +33,15 @@ prepare_varience_data <- function(df) {
   columns_to_expand <- c(parameter_columns, combined_measure_columns)
   
   # Select only the columns we want to keep and unnest them
+  # Use any_of() to select only columns that exist in the dataframe
   # This removes any other columns from the original dataframe and expands 
   # each list element into separate rows, creating a long-format dataset
   # suitable for variance analysis and statistical modeling
+  existing_columns <- intersect(columns_to_expand, names(df))
+  
   expanded_df <- df %>%
-    select(all_of(columns_to_expand)) %>%
-    unnest(cols = all_of(columns_to_expand))
+    select(all_of(existing_columns)) %>%
+    unnest(cols = all_of(existing_columns))
   
   return(expanded_df)
 }
