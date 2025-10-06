@@ -61,6 +61,30 @@
           type = "app";
           program = "${rEnv}/bin/R";
         };
+
+        # Checks - run testthat unit tests
+        checks.default = pkgs.stdenv.mkDerivation {
+          name = "find-variance-tests";
+          src = ./.;
+          
+          buildInputs = [ rEnv ];
+          
+          buildPhase = ''
+            # No build phase needed
+          '';
+          
+          checkPhase = ''
+            # Run testthat tests
+            ${rEnv}/bin/Rscript tests/testthat.R
+          '';
+          
+          installPhase = ''
+            # Create a dummy output to satisfy Nix
+            mkdir -p $out
+          '';
+          
+          doCheck = true;
+        };
       }
     );
 }
