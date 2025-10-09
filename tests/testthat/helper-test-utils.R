@@ -209,4 +209,3 @@ cleanup_test_dbs <- function(db_paths) {
     }
   }
 }
-

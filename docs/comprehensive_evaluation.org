@@ -1,0 +1,439 @@
+#+title: Comprehensive Parameter Impact Evaluation Across All Simulation Datasets
+#+PROPERTY: header-args:R :exports both :results value :colnames yes :dir ../
+#+TBLFM: $2=$1*1.21;fmt(float 4)
+#+LATEX_CLASS_OPTIONS: [9pt]
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+#+LATEX_HEADER: \usepackage{longtable}
+#+LATEX_HEADER: \usepackage{booktabs}
+#+author: Kaidong
+#+date: 2025
+
+* Abstract
+
+This document presents a comprehensive evaluation of parameter influence across all available simulation datasets. We systematically apply the variance decomposition method to analyze the impact of 10 different parameters (indices 2-11) on four key trajectory measurements: agent time enabled, collision times, distance traveled, and PLE energy consumption. The analysis covers both heterogeneous and homogeneous simulation conditions, providing a complete landscape of parameter effects across the experimental space.
+
+* Introduction
+
+Building upon the theoretical framework established in =theory.org= and validated through controlled experiments in =verification.org=, this comprehensive evaluation applies the variance decomposition method to the complete dataset collection. Each parameter-measurement combination is assessed using the bootstrap impact test, yielding quantitative estimates of parameter influence magnitude, statistical significance, and effect size.
+
+** Evaluation Structure
+
+The evaluation is organized into eight primary tables:
+
+1. **Heterogeneous Simulations - Agent Time Enabled**: Parameter effects on agent active time
+2. **Heterogeneous Simulations - Collision Times**: Parameter effects on collision frequency  
+3. **Heterogeneous Simulations - Distance Traveled**: Parameter effects on movement extent
+4. **Heterogeneous Simulations - PLE Energy**: Parameter effects on energy consumption
+
+5. **Homogeneous Simulations - Agent Time Enabled**: Same metrics under homogeneous conditions
+6. **Homogeneous Simulations - Collision Times**
+7. **Homogeneous Simulations - Distance Traveled**
+8. **Homogeneous Simulations - PLE Energy**
+
+Each table contains parameter indices 2-11 as rows and the following evaluation metrics as columns:
+
+- **Impact**: Impact variance (Var(Y_random) - Var(Y_same))
+- **Var_Same**: Same-parameter variance (noise baseline)
+- **Var_Rand**: Random-parameter variance (noise + signal)
+- **Effect_Size**: Normalized effect size (Impact / Var_Same)
+- **P_Value**: Bootstrap p-value for H0: Impact ≤ 0
+- **CI_Lower**: Lower bound of 95% confidence interval
+- **CI_Upper**: Upper bound of 95% confidence interval
+
+** Computational Parameters
+
+All analyses use the following parameters:
+- Bootstrap iterations: B = 1000
+- Confidence level: 95%
+- Alternative hypothesis: "greater" (Impact > 0)
+
+* Heterogeneous Simulations
+
+** Agent Time Enabled
+
+#+name: hetero_time_enabled
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for heterogeneous simulations - agent time enabled
+results <- analyze_all_parameters(
+  sim_type = "heterogeneous",
+  measure_column = "baseLog.agent_time_enableds",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+#+RESULTS: hetero_time_enabled
+| Parameter |              Impact |         Var_Same |         Var_Rand |           Effect_Size | P_Value |           CI_Lower | CI_Upper |
+|-----------+---------------------+------------------+------------------+-----------------------+---------+--------------------+----------|
+|         2 |    13.1213465004069 | 159.128264970367 | 172.249611470774 |     0.082457673392281 |       0 |   11.8977456903872 |      Inf |
+|         3 |   0.222802123655498 | 155.564264653326 | 155.787066776982 |   0.00143221918061973 |   0.364 | -0.838770395722343 |      Inf |
+|         4 |     33.191887997422 | 141.510977083921 | 174.702865081343 |     0.234553450773915 |       0 |   32.0199731397725 |      Inf |
+|         5 |   0.334605820196401 | 157.602387519392 | 157.936993339588 |    0.0021231012135221 |    0.32 | -0.852069241241321 |      Inf |
+|         6 |  0.0924967678043913 | 153.752869615375 | 153.845366383179 |  0.000601593765604371 |   0.436 |  -1.05800896601497 |      Inf |
+|         7 |   -1.82291187414307 | 172.480286626686 | 170.657374752543 |   -0.0105688128759234 |   0.873 |  -4.49580037830607 |      Inf |
+|         8 |    59.1013054334178 | 120.665690027596 | 179.766995461014 |     0.489793788274874 |       0 |   57.9406653631266 |      Inf |
+|         9 |  -0.596579518328952 | 155.821519986599 |  155.22494046827 |  -0.00382860800215696 |   0.813 |  -1.75148900188597 |      Inf |
+|        10 |  -0.305153403942853 | 151.545709576306 | 151.240556172363 |  -0.00201360635544224 |   0.655 |  -1.39850190567642 |      Inf |
+|        11 | -0.0374175051726979 | 149.427817653151 | 149.390400147978 | -0.000250405217451217 |   0.513 |  -1.07372185096563 |      Inf |
+
+** Collision Times
+
+#+name: hetero_collision_times
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for heterogeneous simulations - collision times
+results <- analyze_all_parameters(
+  sim_type = "heterogeneous",
+  measure_column = "baseLog.collisionTimes",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+** Distance Traveled
+
+#+name: hetero_distance_traveled
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for heterogeneous simulations - distance traveled
+results <- analyze_all_parameters(
+  sim_type = "heterogeneous",
+  measure_column = "baseLog.agent_distance_traveleds",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+** PLE Energy
+
+#+name: hetero_ple_energy
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for heterogeneous simulations - PLE energy
+results <- analyze_all_parameters(
+  sim_type = "heterogeneous",
+  measure_column = "baseLog.agent_ple_energys",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+* Homogeneous Simulations
+
+** Agent Time Enabled
+
+#+name: homo_time_enabled
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for homogeneous simulations - agent time enabled
+results <- analyze_all_parameters(
+  sim_type = "homogeneous",
+  measure_column = "baseLog.agent_time_enableds",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+** Collision Times
+
+#+name: homo_collision_times
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for homogeneous simulations - collision times
+results <- analyze_all_parameters(
+  sim_type = "homogeneous",
+  measure_column = "baseLog.collisionTimes",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+** Distance Traveled
+
+#+name: homo_distance_traveled
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for homogeneous simulations - distance traveled
+results <- analyze_all_parameters(
+  sim_type = "homogeneous",
+  measure_column = "baseLog.agent_distance_traveleds",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+** PLE Energy
+
+#+name: homo_ple_energy
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze all parameters for homogeneous simulations - PLE energy
+results <- analyze_all_parameters(
+  sim_type = "homogeneous",
+  measure_column = "baseLog.agent_ple_energys",
+  data_dir = "data",
+  B = 1000,
+  conf.level = 0.95
+)
+
+results
+#+end_src
+
+* Comparative Analysis
+
+** Summary Statistics Across All Conditions
+
+#+name: summary_statistics
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Combine all results for comparative analysis
+sim_types <- c("heterogeneous", "homogeneous")
+measures <- c(
+  "baseLog.agent_time_enableds",
+  "baseLog.collisionTimes", 
+  "baseLog.agent_distance_traveleds",
+  "baseLog.agent_ple_energys"
+)
+
+measure_labels <- c(
+  "Time_Enabled",
+  "Collision_Times",
+  "Distance_Traveled", 
+  "PLE_Energy"
+)
+
+all_results <- list()
+idx <- 1
+
+for (sim_type in sim_types) {
+  for (i in seq_along(measures)) {
+    measure <- measures[i]
+    label <- measure_labels[i]
+    
+    results <- analyze_all_parameters(
+      sim_type = sim_type,
+      measure_column = measure,
+      data_dir = "data",
+      B = 100,  # Reduced for summary computation
+      conf.level = 0.95
+    )
+    
+    results$Sim_Type <- sim_type
+    results$Measurement <- label
+    
+    all_results[[idx]] <- results
+    idx <- idx + 1
+  }
+}
+
+# Combine all results
+combined_df <- do.call(rbind, all_results)
+
+# Calculate summary statistics
+summary_df <- combined_df %>%
+  group_by(Sim_Type, Measurement) %>%
+  summarise(
+    N_Parameters = n(),
+    N_Significant = sum(P_Value < 0.05, na.rm = TRUE),
+    Mean_Impact = mean(Impact, na.rm = TRUE),
+    Mean_Effect_Size = mean(Effect_Size, na.rm = TRUE),
+    Max_Effect_Size = max(Effect_Size, na.rm = TRUE),
+    Min_P_Value = min(P_Value, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+summary_df
+#+end_src
+
+** Parameter Ranking by Average Impact
+
+#+name: parameter_ranking
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Rank parameters by their average impact across all measurements and simulation types
+sim_types <- c("heterogeneous", "homogeneous")
+measures <- c(
+  "baseLog.agent_time_enableds",
+  "baseLog.collisionTimes", 
+  "baseLog.agent_distance_traveleds",
+  "baseLog.agent_ple_energys"
+)
+
+all_results <- list()
+idx <- 1
+
+for (sim_type in sim_types) {
+  for (measure in measures) {
+    results <- analyze_all_parameters(
+      sim_type = sim_type,
+      measure_column = measure,
+      data_dir = "data",
+      B = 100,  # Reduced for ranking computation
+      conf.level = 0.95
+    )
+    
+    results$Sim_Type <- sim_type
+    results$Measurement <- measure
+    
+    all_results[[idx]] <- results
+    idx <- idx + 1
+  }
+}
+
+# Combine all results
+combined_df <- do.call(rbind, all_results)
+
+# Calculate average metrics per parameter
+parameter_ranking <- combined_df %>%
+  group_by(Parameter) %>%
+  summarise(
+    Avg_Impact = mean(Impact, na.rm = TRUE),
+    Avg_Effect_Size = mean(Effect_Size, na.rm = TRUE),
+    N_Significant = sum(P_Value < 0.05, na.rm = TRUE),
+    Total_Tests = n(),
+    Pct_Significant = 100 * N_Significant / Total_Tests,
+    .groups = "drop"
+  ) %>%
+  arrange(desc(Avg_Impact))
+
+parameter_ranking
+#+end_src
+
+** Measurement Sensitivity Analysis
+
+#+name: measurement_sensitivity
+#+begin_src R
+source("examples/comprehensive_analysis_setup.R")
+
+# Analyze which measurements are most sensitive to parameter variations
+sim_types <- c("heterogeneous", "homogeneous")
+measures <- c(
+  "baseLog.agent_time_enableds",
+  "baseLog.collisionTimes", 
+  "baseLog.agent_distance_traveleds",
+  "baseLog.agent_ple_energys"
+)
+
+measure_labels <- c(
+  "Time_Enabled",
+  "Collision_Times",
+  "Distance_Traveled", 
+  "PLE_Energy"
+)
+
+all_results <- list()
+idx <- 1
+
+for (sim_type in sim_types) {
+  for (i in seq_along(measures)) {
+    measure <- measures[i]
+    label <- measure_labels[i]
+    
+    results <- analyze_all_parameters(
+      sim_type = sim_type,
+      measure_column = measure,
+      data_dir = "data",
+      B = 100,  # Reduced for sensitivity analysis
+      conf.level = 0.95
+    )
+    
+    results$Sim_Type <- sim_type
+    results$Measurement <- label
+    
+    all_results[[idx]] <- results
+    idx <- idx + 1
+  }
+}
+
+# Combine all results
+combined_df <- do.call(rbind, all_results)
+
+# Calculate sensitivity metrics per measurement type
+sensitivity_df <- combined_df %>%
+  group_by(Measurement, Sim_Type) %>%
+  summarise(
+    Avg_Effect_Size = mean(Effect_Size, na.rm = TRUE),
+    SD_Effect_Size = sd(Effect_Size, na.rm = TRUE),
+    Max_Effect_Size = max(Effect_Size, na.rm = TRUE),
+    N_Strong_Effects = sum(Effect_Size > 1.0, na.rm = TRUE),
+    N_Significant = sum(P_Value < 0.05, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(Avg_Effect_Size))
+
+sensitivity_df
+#+end_src
+
+* Interpretation Guidelines
+
+** Effect Size Interpretation
+
+Based on the theoretical framework:
+
+- **Effect Size < 0.1**: Negligible parameter influence (< 10% of noise baseline)
+- **Effect Size 0.1-1.0**: Moderate parameter influence
+- **Effect Size > 1.0**: Strong parameter influence (exceeds noise baseline)
+
+** Statistical Significance
+
+- **P-value < 0.05**: Statistically significant evidence of parameter influence
+- **P-value ≥ 0.05**: No statistically significant evidence (but may still have practical importance)
+
+** Confidence Interval Interpretation
+
+- **CI_Lower > 0**: Strong evidence of positive parameter influence
+- **CI_Lower ≤ 0, CI_Upper > 0**: Uncertain effect, may need larger sample size
+- **CI_Upper ≤ 0**: Evidence against parameter influence
+
+* Conclusions
+
+This comprehensive evaluation provides a complete quantitative assessment of parameter influence across:
+- 10 parameters (indices 2-11)
+- 2 simulation types (heterogeneous and homogeneous)
+- 4 measurement categories (time, collisions, distance, energy)
+- Total: 80 parameter-measurement combinations
+
+The results enable:
+1. Identification of the most influential parameters for model calibration
+2. Understanding of measurement sensitivity to parameter variations
+3. Comparison of parameter effects between heterogeneous and homogeneous conditions
+4. Prioritization of parameters for further investigation or control
+
+** Future Directions
+
+1. **Multivariate Analysis**: Examine interactions between multiple parameters simultaneously
+2. **Temporal Analysis**: Investigate parameter influence over simulation time
+3. **Sensitivity to Sample Size**: Determine minimum data requirements for reliable detection
+4. **Heteroscedasticity Analysis**: Test assumption of constant conditional variance

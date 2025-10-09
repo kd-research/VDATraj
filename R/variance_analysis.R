@@ -73,7 +73,7 @@
 #'
 #' @export
 bootstrap_impact_test <- function(H_same, H_rand, conf.level = 0.95,
-                                   B = 1000, alternative = "greater") {
+                                  B = 1000, alternative = "greater") {
   # Input validation
   if (!is.numeric(H_same) || !is.numeric(H_rand)) {
     stop("H_same and H_rand must be numeric vectors or matrices")
@@ -265,4 +265,3 @@ print.bootstrap_impact_test <- function(x, ...) {
 
   invisible(x)
 }
-
