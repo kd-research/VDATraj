@@ -11,7 +11,7 @@ truthy_params <- base_params
 random_params <- runif(n_samples, x_range[1], x_range[2])
 
 # Function that IGNORES the parameter: h(x) = 15 + noise
-constant_function <- function(x) rep(15, length(x))  # Constant output!
+constant_function <- function(x) rep(15, length(x)) # Constant output!
 noise_sd <- 2.0
 
 # Generate measurements (parameter doesn't matter)

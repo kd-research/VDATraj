@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # Run all unit tests for the find-variance project
-# 
+#
 # This script runs the complete test suite using testthat
 # and provides a summary of results.
 #
@@ -39,20 +39,20 @@ if (is.null(test_results)) {
   cat("✓ All tests passed!\n")
 } else {
   summary_df <- as.data.frame(test_results)
-  
+
   # Print concise summary
   total_tests <- sum(summary_df$nb)
   passed <- sum(summary_df$passed)
   failed <- sum(summary_df$failed)
   warnings <- sum(summary_df$warning)
   skipped <- sum(summary_df$skipped)
-  
+
   cat(sprintf("Total: %d tests\n", total_tests))
   cat(sprintf("✓ Passed: %d\n", passed))
   if (failed > 0) cat(sprintf("✗ Failed: %d\n", failed))
   if (warnings > 0) cat(sprintf("⚠ Warnings: %d\n", warnings))
   if (skipped > 0) cat(sprintf("○ Skipped: %d\n", skipped))
-  
+
   # Check if any failures
   if (any(summary_df$failed > 0)) {
     cat("\n✗ Some tests failed. Please review the output above.\n")
@@ -65,4 +65,3 @@ if (is.null(test_results)) {
 }
 
 cat("\nTest suite completed.\n")
-

@@ -27,15 +27,15 @@ test_that("prepare_varience_data unnests parameter columns correctly", {
     truthyParameters = I(list(c(1.0, 2.0, 3.0))),
     randomParameters = I(list(c(4.0, 5.0, 6.0)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_s3_class(result, "data.frame")
-  expect_equal(nrow(result), 3)  # 3 values per parameter
+  expect_equal(nrow(result), 3) # 3 values per parameter
   expect_true("baseParameters" %in% names(result))
   expect_true("truthyParameters" %in% names(result))
   expect_true("randomParameters" %in% names(result))
-  
+
   # Check unnested values
   expect_equal(result$baseParameters, c(1.0, 2.0, 3.0))
   expect_equal(result$truthyParameters, c(1.0, 2.0, 3.0))
@@ -49,9 +49,9 @@ test_that("prepare_varience_data unnests log measure columns correctly", {
     truthyLog.agent_time_enableds = I(list(c(13.0, 14.0, 15.0))),
     randomLog.agent_time_enableds = I(list(c(16.0, 17.0, 18.0)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 3)
   expect_true("baseLog.agent_time_enableds" %in% names(result))
@@ -59,7 +59,7 @@ test_that("prepare_varience_data unnests log measure columns correctly", {
 })
 
 test_that("prepare_varience_data handles all four measure column types", {
-  # Test all four types: agent_time_enableds, collisionTimes, 
+  # Test all four types: agent_time_enableds, collisionTimes,
   # agent_distance_traveleds, agent_ple_energys
   test_df <- data.frame(
     baseLog.agent_time_enableds = I(list(c(1, 2))),
@@ -67,9 +67,9 @@ test_that("prepare_varience_data handles all four measure column types", {
     baseLog.agent_distance_traveleds = I(list(c(5, 6))),
     baseLog.agent_ple_energys = I(list(c(7, 8)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_equal(nrow(result), 2)
   expect_true("baseLog.agent_time_enableds" %in% names(result))
   expect_true("baseLog.collisionTimes" %in% names(result))
@@ -84,9 +84,9 @@ test_that("prepare_varience_data handles all three log prefixes", {
     truthyLog.agent_time_enableds = I(list(c(3, 4))),
     randomLog.agent_time_enableds = I(list(c(5, 6)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_equal(nrow(result), 2)
   expect_true("baseLog.agent_time_enableds" %in% names(result))
   expect_true("truthyLog.agent_time_enableds" %in% names(result))
@@ -102,9 +102,9 @@ test_that("prepare_varience_data drops columns not in the expected list", {
     baseLog.agent_time_enableds = I(list(c(3, 4))),
     yetAnotherExtra = TRUE
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   # Should only have expected columns
   expect_false("extraColumn" %in% names(result))
   expect_false("anotherExtra" %in% names(result))
@@ -132,13 +132,13 @@ test_that("prepare_varience_data handles complete dataset with all columns", {
     truthyLog.agent_ple_energys = I(list(c(42, 43))),
     randomLog.agent_ple_energys = I(list(c(44, 45)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 2)
-  expect_equal(ncol(result), 15)  # 3 param + 12 measure columns
-  
+  expect_equal(ncol(result), 15) # 3 param + 12 measure columns
+
   # Verify a few values
   expect_equal(result$baseParameters, c(0.1, 0.2))
   expect_equal(result$baseLog.agent_time_enableds, c(10, 11))
@@ -152,9 +152,9 @@ test_that("prepare_varience_data handles multiple rows with nested data", {
     truthyParameters = I(list(c(1, 2), c(3, 4))),
     baseLog.agent_time_enableds = I(list(c(10, 11), c(12, 13)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   # Should have 4 rows (2 original rows × 2 nested values each)
   expect_equal(nrow(result), 4)
   expect_equal(result$baseParameters, c(1, 2, 3, 4))
@@ -167,9 +167,9 @@ test_that("prepare_varience_data handles varying nested lengths consistently", {
     baseParameters = I(list(c(1, 2, 3))),
     baseLog.agent_time_enableds = I(list(c(10, 11, 12)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_equal(nrow(result), 3)
 })
 
@@ -180,9 +180,9 @@ test_that("prepare_varience_data handles single value nested lists", {
     truthyParameters = I(list(1.5)),
     randomParameters = I(list(2.5))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_equal(nrow(result), 1)
   expect_equal(result$baseParameters, 1.5)
   expect_equal(result$randomParameters, 2.5)
@@ -195,9 +195,9 @@ test_that("prepare_varience_data handles empty dataframe", {
     truthyParameters = list(),
     randomParameters = list()
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 0)
 })
@@ -209,16 +209,19 @@ test_that("prepare_varience_data errors gracefully when columns are missing", {
     # Missing truthyParameters, randomParameters, and all log columns
     extraColumn = "something"
   )
-  
+
   # The select should handle missing columns
   # This might error or return empty depending on implementation
   # Let's test that it handles missing columns gracefully
-  result_or_error <- tryCatch({
-    prepare_varience_data(test_df)
-  }, error = function(e) {
-    "error"
-  })
-  
+  result_or_error <- tryCatch(
+    {
+      prepare_varience_data(test_df)
+    },
+    error = function(e) {
+      "error"
+    }
+  )
+
   # Either returns empty df or errors - both are acceptable
   expect_true(is.data.frame(result_or_error) || result_or_error == "error")
 })
@@ -230,9 +233,9 @@ test_that("prepare_varience_data preserves data types after unnesting", {
     truthyParameters = I(list(c(1.5, 2.7, 3.9))),
     baseLog.agent_time_enableds = I(list(c(10.1, 11.2, 12.3)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_type(result$baseParameters, "double")
   expect_type(result$truthyParameters, "double")
   expect_type(result$baseLog.agent_time_enableds, "double")
@@ -245,9 +248,9 @@ test_that("prepare_varience_data handles NA values in nested data", {
     truthyParameters = I(list(c(1.0, 2.0, 3.0))),
     baseLog.agent_time_enableds = I(list(c(NA, 11.0, 12.0)))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_equal(nrow(result), 3)
   expect_true(is.na(result$baseParameters[2]))
   expect_true(is.na(result$baseLog.agent_time_enableds[1]))
@@ -273,20 +276,19 @@ test_that("prepare_varience_data works with data from process_parsed_data", {
     truthyLog.agent_ple_energys = list(c(71.5, 74.2, 69.5)),
     randomLog.agent_ple_energys = list(c(72.8, 70.9, 71.2))
   )
-  
+
   result <- prepare_varience_data(test_df)
-  
+
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 3)
   expect_equal(ncol(result), 15)
-  
+
   # Verify structure
   expect_true(all(c("baseParameters", "truthyParameters", "randomParameters") %in% names(result)))
   expect_true(all(grepl("Log\\.", names(result)[4:15])))
-  
+
   # Verify values are unnested correctly
   expect_equal(result$baseParameters[1], 0.379)
   expect_equal(result$baseLog.collisionTimes[2], 33)
   expect_equal(result$randomLog.agent_ple_energys[3], 71.2)
 })
-

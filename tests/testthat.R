@@ -8,4 +8,3 @@ source("tests/setup.R")
 
 # Run all tests
 test_dir("tests/testthat", reporter = "progress")
-

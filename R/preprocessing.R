@@ -1,5 +1,5 @@
 #' Prepare variance data by unnesting nested columns from database
-#' 
+#'
 #' This function takes a data frame with nested list columns (from JSON/log parsing)
 #' and expands them into separate rows for variance analysis. It handles both
 #' parameter columns (containing JSON arrays) and measure columns (containing
@@ -17,13 +17,16 @@ prepare_varience_data <- function(df) {
   # These come from the database query and contain experiment parameters
   parameter_columns <- c("baseParameters", "truthyParameters", "randomParameters")
   measure_columns_prefix <- c("baseLog", "truthyLog", "randomLog")
-  measure_columns <- c("agent_time_enableds", "collisionTimes", "agent_distance_traveleds", 
-                       "agent_ple_energys")
-  
+  measure_columns <- c(
+    "agent_time_enableds", "collisionTimes", "agent_distance_traveleds",
+    "agent_ple_energys"
+  )
+
   # Create all combinations of prefix and measure columns
-  combined_measure_columns <- outer(measure_columns_prefix, measure_columns, 
-                                   FUN = paste, sep = ".")
-  
+  combined_measure_columns <- outer(measure_columns_prefix, measure_columns,
+    FUN = paste, sep = "."
+  )
+
   # Convert the resulting matrix to a flat vector of column names
   # This gives us all 12 combinations (3 prefixes × 4 measures)
   combined_measure_columns <- as.vector(combined_measure_columns)
@@ -31,19 +34,17 @@ prepare_varience_data <- function(df) {
   # Combine parameter columns and measure columns into one list
   # These are all the columns that contain nested data (lists/vectors) that need unnesting
   columns_to_expand <- c(parameter_columns, combined_measure_columns)
-  
+
   # Select only the columns we want to keep and unnest them
   # Use any_of() to select only columns that exist in the dataframe
-  # This removes any other columns from the original dataframe and expands 
+  # This removes any other columns from the original dataframe and expands
   # each list element into separate rows, creating a long-format dataset
   # suitable for variance analysis and statistical modeling
   existing_columns <- intersect(columns_to_expand, names(df))
-  
+
   expanded_df <- df %>%
     select(all_of(existing_columns)) %>%
     unnest(cols = all_of(existing_columns))
-  
+
   return(expanded_df)
 }
-
-

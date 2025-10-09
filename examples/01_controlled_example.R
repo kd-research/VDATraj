@@ -7,8 +7,8 @@ x_range <- c(0, 10)
 
 # Generate base parameters
 base_params <- runif(n_samples, x_range[1], x_range[2])
-truthy_params <- base_params  # Same parameters for replica
-random_params <- runif(n_samples, x_range[1], x_range[2])  # Different parameters
+truthy_params <- base_params # Same parameters for replica
+random_params <- runif(n_samples, x_range[1], x_range[2]) # Different parameters
 
 # True function: h(x) = 2x + 5 + noise
 true_function <- function(x) 2 * x + 5
