@@ -138,27 +138,42 @@ bootstrap_impact_test <- function(H_same, H_rand, conf.level = 0.95,
   # Compute effect size (normalized by noise baseline)
   effect_size <- impact_obs / var_same
 
-  # Step 3: Bootstrap procedure
-  # Initialize array for bootstrap impact estimates
-  impact_boot <- numeric(B)
-
-  # Set seed for reproducibility (optional - user can set.seed before calling)
-  # We don't set seed here to allow user control
-
-  # Bootstrap loop
-  for (b in 1:B) {
+  # Step 3: Bootstrap procedure (parallelized)
+  # Detect number of available cores
+  n_cores <- parallel::detectCores()
+  
+  # Set up parallel-safe random number generator for reproducibility
+  # Use L'Ecuyer-CMRG for reproducible parallel computation
+  old_rng_kind <- RNGkind()[1]
+  RNGkind("L'Ecuyer-CMRG")
+  on.exit(RNGkind(old_rng_kind), add = TRUE)
+  
+  # Bootstrap function for parallel execution
+  bootstrap_iteration <- function(b, Y_same, Y_rand, n) {
     # Sample with replacement: indices for paired observations
     indices <- sample(1:n, size = n, replace = TRUE)
-
+    
     # Create bootstrap samples (maintaining pairing structure)
     Y_same_boot <- Y_same[indices]
     Y_rand_boot <- Y_rand[indices]
-
+    
     # Compute bootstrap impact
     var_same_boot <- var(Y_same_boot)
     var_rand_boot <- var(Y_rand_boot)
-    impact_boot[b] <- var_rand_boot - var_same_boot
+    
+    return(var_rand_boot - var_same_boot)
   }
+  
+  # Run bootstrap iterations in parallel with reproducible RNG
+  impact_boot <- unlist(parallel::mclapply(
+    1:B,
+    bootstrap_iteration,
+    Y_same = Y_same,
+    Y_rand = Y_rand,
+    n = n,
+    mc.cores = n_cores,
+    mc.set.seed = TRUE
+  ))
 
   # Step 4: Compute confidence interval
   alpha <- 1 - conf.level
