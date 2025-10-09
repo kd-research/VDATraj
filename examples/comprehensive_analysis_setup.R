@@ -107,9 +107,13 @@ extract_sim_type <- function(db_path) {
 #' @param data_dir Directory containing SQLite files (default: "data")
 #' @param B Number of bootstrap iterations (default: 1000)
 #' @param conf.level Confidence level (default: 0.95)
+#' @param n_cores Number of CPU cores to use for parallel processing.
+#'                Default: NULL (auto-detect, uses all available cores - 1)
+#'                Set to 1 to disable parallel processing
 #' @return Data frame with results for all parameter indices
 analyze_all_parameters <- function(sim_type, measure_column,
-                                   data_dir = "data", B = 1000, conf.level = 0.95) {
+                                   data_dir = "data", B = 1000, conf.level = 0.95,
+                                   n_cores = NULL) {
   # Find all database files matching the simulation type
   pattern <- paste0("cog_\\d+_", sim_type, "\\.sqlite3")
   db_files <- list.files(data_dir, pattern = pattern, full.names = TRUE)
@@ -117,10 +121,14 @@ analyze_all_parameters <- function(sim_type, measure_column,
   # Sort by parameter index
   db_files <- db_files[order(sapply(db_files, extract_param_index))]
 
-  # Initialize results list
-  results_list <- list()
+  # Determine number of cores to use
+  if (is.null(n_cores)) {
+    # Auto-detect: use all cores minus 1, minimum 1
+    n_cores <- max(1, parallel::detectCores() - 1)
+  }
 
-  for (db_file in db_files) {
+  # Function to process a single database file
+  process_db_file <- function(db_file) {
     param_idx <- extract_param_index(db_file)
 
     # Run analysis
@@ -129,7 +137,7 @@ analyze_all_parameters <- function(sim_type, measure_column,
     # Extract relevant statistics
     if ("error" %in% names(test_result)) {
       # Handle error case
-      results_list[[length(results_list) + 1]] <- data.frame(
+      return(data.frame(
         Parameter = param_idx,
         Impact = NA,
         Var_Same = NA,
@@ -139,13 +147,13 @@ analyze_all_parameters <- function(sim_type, measure_column,
         CI_Lower = NA,
         CI_Upper = NA,
         stringsAsFactors = FALSE
-      )
+      ))
     } else {
       # Extract confidence interval
       ci_lower <- test_result$conf.int[1]
       ci_upper <- test_result$conf.int[2]
 
-      results_list[[length(results_list) + 1]] <- data.frame(
+      return(data.frame(
         Parameter = param_idx,
         Impact = test_result$impact,
         Var_Same = test_result$var_same,
@@ -155,8 +163,22 @@ analyze_all_parameters <- function(sim_type, measure_column,
         CI_Lower = ci_lower,
         CI_Upper = ci_upper,
         stringsAsFactors = FALSE
-      )
+      ))
     }
+  }
+
+  # Run analysis in parallel or sequentially
+  if (n_cores > 1 && length(db_files) > 1) {
+    # Parallel processing using mclapply (Unix/Linux/Mac)
+    # Note: mclapply doesn't work on Windows, falls back to lapply automatically
+    results_list <- parallel::mclapply(
+      db_files,
+      process_db_file,
+      mc.cores = n_cores
+    )
+  } else {
+    # Sequential processing
+    results_list <- lapply(db_files, process_db_file)
   }
 
   # Combine all results into a single data frame

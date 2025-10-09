@@ -64,22 +64,25 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 #+RESULTS: hetero_time_enabled
-| Parameter |              Impact |         Var_Same |         Var_Rand |           Effect_Size | P_Value |           CI_Lower | CI_Upper |
-|-----------+---------------------+------------------+------------------+-----------------------+---------+--------------------+----------|
-|         2 |    13.1213465004069 | 159.128264970367 | 172.249611470774 |     0.082457673392281 |       0 |   11.8977456903872 |      Inf |
-|         3 |   0.222802123655498 | 155.564264653326 | 155.787066776982 |   0.00143221918061973 |   0.364 | -0.838770395722343 |      Inf |
-|         4 |     33.191887997422 | 141.510977083921 | 174.702865081343 |     0.234553450773915 |       0 |   32.0199731397725 |      Inf |
-|         5 |   0.334605820196401 | 157.602387519392 | 157.936993339588 |    0.0021231012135221 |    0.32 | -0.852069241241321 |      Inf |
-|         6 |  0.0924967678043913 | 153.752869615375 | 153.845366383179 |  0.000601593765604371 |   0.436 |  -1.05800896601497 |      Inf |
-|         7 |   -1.82291187414307 | 172.480286626686 | 170.657374752543 |   -0.0105688128759234 |   0.873 |  -4.49580037830607 |      Inf |
-|         8 |    59.1013054334178 | 120.665690027596 | 179.766995461014 |     0.489793788274874 |       0 |   57.9406653631266 |      Inf |
-|         9 |  -0.596579518328952 | 155.821519986599 |  155.22494046827 |  -0.00382860800215696 |   0.813 |  -1.75148900188597 |      Inf |
-|        10 |  -0.305153403942853 | 151.545709576306 | 151.240556172363 |  -0.00201360635544224 |   0.655 |  -1.39850190567642 |      Inf |
-|        11 | -0.0374175051726979 | 149.427817653151 | 149.390400147978 | -0.000250405217451217 |   0.513 |  -1.07372185096563 |      Inf |
+| Parameter |  Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+|-----------+---------+-------------+---------+----------+----------------|
+|         2 | 13.1213 |      0.0825 |       0 |  11.8506 | YES:--         |
+|         3 |  0.2228 |      0.0014 |   0.367 |  -1.0202 | ---:NO         |
+|         4 | 33.1919 |      0.2346 |       0 |   31.969 | YES:--         |
+|         5 |  0.3346 |      0.0021 |    0.32 |  -0.7821 | ---:NO         |
+|         6 |  0.0925 |      0.0006 |   0.463 |  -1.1173 | ---:NO         |
+|         7 | -1.8229 |     -0.0106 |   0.857 |  -4.5123 | ---:NO         |
+|         8 | 59.1013 |      0.4898 |       0 |  57.9542 | YES:--         |
+|         9 | -0.5966 |     -0.0038 |   0.809 |  -1.6556 | ---:NO         |
+|        10 | -0.3052 |      -0.002 |   0.667 |  -1.3805 | ---:NO         |
+|        11 | -0.0374 |     -0.0003 |   0.528 |  -1.0963 | ---:NO         |
 
 ** Collision Times
 
@@ -96,7 +99,10 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 ** Distance Traveled
@@ -114,7 +120,10 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 ** PLE Energy
@@ -132,7 +141,10 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 * Homogeneous Simulations
@@ -152,7 +164,10 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 ** Collision Times
@@ -170,7 +185,10 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 ** Distance Traveled
@@ -188,7 +206,10 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 ** PLE Energy
@@ -206,7 +227,10 @@ results <- analyze_all_parameters(
   conf.level = 0.95
 )
 
-results
+results %>%
+  select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  round(digit=4) %>%
+  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
 #+end_src
 
 * Comparative Analysis
