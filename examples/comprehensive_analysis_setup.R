@@ -186,3 +186,116 @@ analyze_all_parameters <- function(sim_type, measure_column,
 
   return(results_df)
 }
+
+#' Cached analysis of all parameters with automatic result storage
+#'
+#' @param sim_type "heterogeneous" or "homogeneous"
+#' @param measure_column Measurement column name (e.g., "baseLog.collisionTimes")
+#' @param data_dir Directory containing SQLite files (default: "data")
+#' @param B Number of bootstrap iterations (default: 1000)
+#' @param conf.level Confidence level (default: 0.95)
+#' @param n_cores Number of CPU cores to use for parallel processing.
+#'                Default: NULL (auto-detect, uses all available cores - 1)
+#' @param cache_dir Directory to store cached results (default: "cache")
+#' @param force_refresh If TRUE, ignore cached results and recompute (default: FALSE)
+#' @return Data frame with results for all parameter indices
+analyze_all_parameters_cached <- function(sim_type, measure_column,
+                                          data_dir = "data", B = 1000, conf.level = 0.95,
+                                          n_cores = NULL,
+                                          cache_dir = "cache",
+                                          force_refresh = FALSE) {
+  # Ensure cache directory exists
+  if (!dir.exists(cache_dir)) {
+    dir.create(cache_dir, recursive = TRUE)
+  }
+
+  # Create a unique cache key based on parameters
+  cache_key <- digest::digest(list(
+    sim_type = sim_type,
+    measure_column = measure_column,
+    data_dir = data_dir,
+    B = B,
+    conf.level = conf.level,
+    # Also include file modification times to detect data changes
+    file_mtimes = file.info(list.files(data_dir, 
+                                       pattern = paste0("cog_\\d+_", sim_type, "\\.sqlite3"),
+                                       full.names = TRUE))$mtime
+  ))
+
+  # Construct cache file path
+  cache_file <- file.path(
+    cache_dir,
+    paste0("analysis_", sim_type, "_", 
+           gsub("[^a-zA-Z0-9]", "_", measure_column), "_",
+           cache_key, ".rds")
+  )
+
+  # Check if cached result exists and is valid
+  if (!force_refresh && file.exists(cache_file)) {
+    message("Loading cached results from: ", cache_file)
+    results <- readRDS(cache_file)
+    
+    # Validate cached result structure
+    if (is.data.frame(results) && nrow(results) > 0) {
+      return(results)
+    } else {
+      message("Cached result is invalid, recomputing...")
+    }
+  }
+
+  # Compute results if no valid cache exists
+  message("Computing analysis results (this may take a while)...")
+  results <- analyze_all_parameters(
+    sim_type = sim_type,
+    measure_column = measure_column,
+    data_dir = data_dir,
+    B = B,
+    conf.level = conf.level,
+    n_cores = n_cores
+  )
+
+  # Save results to cache
+  message("Saving results to cache: ", cache_file)
+  saveRDS(results, cache_file)
+
+  # Clean up old cache files for the same parameters (different hashes)
+  old_pattern <- paste0("analysis_", sim_type, "_", 
+                        gsub("[^a-zA-Z0-9]", "_", measure_column), "_.*\\.rds")
+  old_files <- list.files(cache_dir, pattern = old_pattern, full.names = TRUE)
+  old_files <- old_files[old_files != cache_file]
+  
+  if (length(old_files) > 0) {
+    message("Cleaning up ", length(old_files), " old cache file(s)")
+    unlink(old_files)
+  }
+
+  return(results)
+}
+
+#' Clear all cached analysis results
+#'
+#' @param cache_dir Directory containing cached results (default: "cache")
+#' @param pattern Optional pattern to match specific cache files (default: NULL, clears all)
+#' @return Number of files deleted
+clear_analysis_cache <- function(cache_dir = "cache", pattern = NULL) {
+  if (!dir.exists(cache_dir)) {
+    message("Cache directory does not exist: ", cache_dir)
+    return(0)
+  }
+
+  if (is.null(pattern)) {
+    pattern <- "analysis_.*\\.rds"
+  }
+
+  cache_files <- list.files(cache_dir, pattern = pattern, full.names = TRUE)
+  
+  if (length(cache_files) == 0) {
+    message("No cache files found to delete")
+    return(0)
+  }
+
+  message("Deleting ", length(cache_files), " cache file(s)")
+  unlink(cache_files)
+  
+  return(length(cache_files))
+}

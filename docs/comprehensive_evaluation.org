@@ -56,12 +56,13 @@ All analyses use the following parameters:
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - agent time enabled
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "heterogeneous",
   measure_column = "baseLog.agent_time_enableds",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -72,19 +73,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: hetero_time_enabled
+#+RESULTS[c336241d25116460d2eb73ee71f58e66108cf079]: hetero_time_enabled
 | Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
-|         2 | 13.1213 |      0.0825 |       0 |  11.7998 | YES:--         |
-|         3 |  0.2228 |      0.0014 |   0.374 |  -0.8243 | ---:NO         |
-|         4 | 33.1919 |      0.2346 |       0 |  32.0495 | YES:--         |
-|         5 |  0.3346 |      0.0021 |   0.346 |  -0.8407 | ---:NO         |
-|         6 |  0.0925 |      0.0006 |   0.442 |  -1.0125 | ---:NO         |
-|         7 | -1.8229 |     -0.0106 |   0.864 |  -4.4507 | ---:NO         |
-|         8 | 59.1013 |      0.4898 |       0 |  57.9333 | YES:--         |
-|         9 | -0.5966 |     -0.0038 |   0.836 |  -1.8121 | ---:NO         |
-|        10 | -0.3052 |      -0.002 |   0.682 |  -1.3434 | ---:NO         |
-|        11 | -0.0374 |     -0.0003 |   0.499 |   -1.132 | ---:NO         |
+|         2 | 13.1213 |      0.0825 |       0 |  11.8946 | YES:--         |
+|         3 |  0.2228 |      0.0014 |    0.37 |  -0.9356 | ---:NO         |
+|         4 | 33.1919 |      0.2346 |       0 |  32.0015 | YES:--         |
+|         5 |  0.3346 |      0.0021 |   0.293 |  -0.7889 | ---:NO         |
+|         6 |  0.0925 |      0.0006 |   0.448 |  -0.9441 | ---:NO         |
+|         7 | -1.8229 |     -0.0106 |   0.867 |  -4.4513 | ---:NO         |
+|         8 | 59.1013 |      0.4898 |       0 |   58.012 | YES:--         |
+|         9 | -0.5966 |     -0.0038 |   0.802 |   -1.689 | ---:NO         |
+|        10 | -0.3052 |      -0.002 |   0.643 |  -1.3813 | ---:NO         |
+|        11 | -0.0374 |     -0.0003 |    0.54 |  -1.1439 | ---:NO         |
 
 ** Collision Times
 
@@ -93,12 +94,13 @@ results %>%
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - collision times
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "heterogeneous",
   measure_column = "baseLog.collisionTimes",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -109,19 +111,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: hetero_collision_times
+#+RESULTS[415715dba11fc62d7f88adf98762b8dc227cc292]: hetero_collision_times
 | Parameter |   Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+----------+-------------+---------+----------+----------------|
-|         2 | 206.8098 |      0.1814 |       0 | 196.9145 | YES:--         |
-|         3 |  -0.5416 |     -0.0004 |   0.543 |   -9.291 | ---:NO         |
-|         4 | 225.9138 |      0.2015 |       0 | 216.3419 | YES:--         |
-|         5 |  17.8711 |      0.0145 |   0.002 |    8.899 | YES:--         |
-|         6 |  -1.6304 |     -0.0014 |   0.619 | -10.3811 | ---:NO         |
-|         7 |   1.1538 |      0.0009 |   0.432 |  -7.6648 | ---:NO         |
-|         8 | 262.9706 |      0.2995 |       0 | 255.1973 | YES:--         |
-|         9 |  -6.1008 |      -0.005 |   0.888 | -14.6947 | ---:NO         |
-|        10 |   2.9979 |      0.0025 |   0.286 |  -5.6384 | ---:NO         |
-|        11 |  -7.3141 |     -0.0062 |   0.912 | -15.5418 | ---:NO         |
+|         2 | 206.8098 |      0.1814 |       0 | 197.1135 | YES:--         |
+|         3 |  -0.5416 |     -0.0004 |   0.513 |  -9.9292 | ---:NO         |
+|         4 | 225.9138 |      0.2015 |       0 | 216.4623 | YES:--         |
+|         5 |  17.8711 |      0.0145 |   0.001 |   8.8738 | YES:--         |
+|         6 |  -1.6304 |     -0.0014 |   0.623 | -10.6143 | ---:NO         |
+|         7 |   1.1538 |      0.0009 |   0.405 |  -7.5765 | ---:NO         |
+|         8 | 262.9706 |      0.2995 |       0 |   254.76 | YES:--         |
+|         9 |  -6.1008 |      -0.005 |   0.865 | -15.3617 | ---:NO         |
+|        10 |   2.9979 |      0.0025 |   0.293 |  -5.8323 | ---:NO         |
+|        11 |  -7.3141 |     -0.0062 |   0.919 | -15.6789 | ---:NO         |
 
 ** Distance Traveled
 
@@ -130,12 +132,13 @@ results %>%
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - distance traveled
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "heterogeneous",
   measure_column = "baseLog.agent_distance_traveleds",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -146,19 +149,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: hetero_distance_traveled
+#+RESULTS[b428e3e1162453987a8847a2b4ff14f3273c7ffd]: hetero_distance_traveled
 | Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
-|         2 |  3.0392 |       0.081 |       0 |   2.7293 | YES:--         |
-|         3 |  0.0142 |      0.0004 |   0.452 |  -0.2466 | ---:NO         |
-|         4 |  1.6671 |      0.0555 |       0 |   1.4363 | YES:--         |
-|         5 |  0.7448 |      0.0203 |       0 |   0.4665 | YES:--         |
-|         6 |  0.0078 |      0.0002 |   0.484 |  -0.2578 | ---:NO         |
-|         7 |  -0.768 |      -0.017 |   0.812 |  -2.1623 | ---:NO         |
-|         8 |  4.4454 |      0.1874 |       0 |    4.245 | YES:--         |
-|         9 | -0.0938 |     -0.0026 |   0.734 |  -0.3687 | ---:NO         |
-|        10 | -0.0004 |           0 |    0.53 |  -0.2814 | ---:NO         |
-|        11 |  0.1127 |      0.0033 |   0.256 |  -0.1631 | ---:NO         |
+|         2 |  3.0392 |       0.081 |       0 |   2.7379 | YES:--         |
+|         3 |  0.0142 |      0.0004 |    0.46 |  -0.2522 | ---:NO         |
+|         4 |  1.6671 |      0.0555 |       0 |    1.413 | YES:--         |
+|         5 |  0.7448 |      0.0203 |       0 |   0.4742 | YES:--         |
+|         6 |  0.0078 |      0.0002 |   0.448 |  -0.2585 | ---:NO         |
+|         7 |  -0.768 |      -0.017 |   0.846 |  -2.1424 | ---:NO         |
+|         8 |  4.4454 |      0.1874 |       0 |   4.2447 | YES:--         |
+|         9 | -0.0938 |     -0.0026 |   0.693 |  -0.3463 | ---:NO         |
+|        10 | -0.0004 |           0 |   0.485 |  -0.2711 | ---:NO         |
+|        11 |  0.1127 |      0.0033 |    0.23 |  -0.1463 | ---:NO         |
 
 ** PLE Energy
 
@@ -167,12 +170,13 @@ results %>%
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - PLE energy
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "heterogeneous",
   measure_column = "baseLog.agent_ple_energys",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -183,19 +187,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: hetero_ple_energy
+#+RESULTS[91ceaa8c13e386192a23ee7d356dc461785cb92e]: hetero_ple_energy
 | Parameter |   Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+----------+-------------+---------+----------+----------------|
-|         2 |  88.8163 |      0.0851 |       0 |  80.5547 | YES:--         |
-|         3 |   1.0141 |       0.001 |   0.419 |   -6.199 | ---:NO         |
-|         4 | 109.4964 |      0.1216 |       0 | 102.3375 | YES:--         |
-|         5 |   6.2166 |       0.006 |    0.09 |  -1.3511 | ---:NO         |
-|         6 |   0.1202 |      0.0001 |   0.504 |  -7.3329 | ---:NO         |
-|         7 | -13.7179 |     -0.0118 |   0.841 | -34.5788 | ---:NO         |
-|         8 | 243.6197 |      0.3275 |       0 | 237.2033 | YES:--         |
-|         9 |  -3.7515 |     -0.0037 |   0.797 | -11.1641 | ---:NO         |
-|        10 |    -1.39 |     -0.0014 |   0.618 |  -8.1928 | ---:NO         |
-|        11 |   0.6773 |      0.0007 |   0.441 |    -6.61 | ---:NO         |
+|         2 |  88.8163 |      0.0851 |       0 |  81.2565 | YES:--         |
+|         3 |   1.0141 |       0.001 |   0.433 |  -6.5417 | ---:NO         |
+|         4 | 109.4964 |      0.1216 |       0 | 102.3503 | YES:--         |
+|         5 |   6.2166 |       0.006 |   0.091 |  -1.2029 | ---:NO         |
+|         6 |   0.1202 |      0.0001 |   0.517 |  -7.3416 | ---:NO         |
+|         7 | -13.7179 |     -0.0118 |   0.854 | -35.4071 | ---:NO         |
+|         8 | 243.6197 |      0.3275 |       0 | 236.4651 | YES:--         |
+|         9 |  -3.7515 |     -0.0037 |   0.777 | -11.3265 | ---:NO         |
+|        10 |    -1.39 |     -0.0014 |   0.616 |  -8.2859 | ---:NO         |
+|        11 |   0.6773 |      0.0007 |    0.43 |  -6.4343 | ---:NO         |
 
 * Homogeneous Simulations
 
@@ -206,12 +210,13 @@ results %>%
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - agent time enabled
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "homogeneous",
   measure_column = "baseLog.agent_time_enableds",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -222,19 +227,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: homo_time_enabled
+#+RESULTS[2a34d5c6fea5ec5be78118e28e70ee6e14834f06]: homo_time_enabled
 | Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
-|         2 | 11.3314 |      0.0567 |       0 |   9.6871 | YES:--         |
-|         3 | -0.1727 |     -0.0011 |   0.584 |  -1.2687 | ---:NO         |
-|         4 | 21.9335 |      0.1421 |       0 |  20.6777 | YES:--         |
-|         5 |  0.6564 |       0.004 |   0.167 |  -0.5116 | ---:NO         |
-|         6 |  0.4142 |      0.0027 |   0.256 |   -0.645 | ---:NO         |
-|         7 |   4.471 |      0.0266 |       0 |   1.9883 | YES:--         |
-|         8 | 38.9892 |      0.2684 |       0 |  37.6768 | YES:--         |
-|         9 |  0.3982 |      0.0026 |     0.3 |   -0.732 | ---:NO         |
-|        10 |  0.6749 |      0.0045 |    0.16 |  -0.4338 | ---:NO         |
-|        11 |  0.5932 |      0.0039 |   0.184 |  -0.5118 | ---:NO         |
+|         2 | 11.3314 |      0.0567 |       0 |   9.7249 | YES:--         |
+|         3 | -0.1727 |     -0.0011 |   0.606 |   -1.239 | ---:NO         |
+|         4 | 21.9335 |      0.1421 |       0 |  20.7165 | YES:--         |
+|         5 |  0.6564 |       0.004 |   0.166 |  -0.4662 | ---:NO         |
+|         6 |  0.4142 |      0.0027 |   0.286 |  -0.7224 | ---:NO         |
+|         7 |   4.471 |      0.0266 |   0.001 |   2.0335 | YES:--         |
+|         8 | 38.9892 |      0.2684 |       0 |  37.7099 | YES:--         |
+|         9 |  0.3982 |      0.0026 |   0.298 |  -0.7984 | ---:NO         |
+|        10 |  0.6749 |      0.0045 |   0.142 |  -0.4362 | ---:NO         |
+|        11 |  0.5932 |      0.0039 |    0.19 |  -0.5493 | ---:NO         |
 
 ** Collision Times
 
@@ -243,12 +248,13 @@ results %>%
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - collision times
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "homogeneous",
   measure_column = "baseLog.collisionTimes",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -259,19 +265,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: homo_collision_times
+#+RESULTS[9fae38a826f9ef6a6f89f075590b5573805696ea]: homo_collision_times
 | Parameter |   Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+----------+-------------+---------+----------+----------------|
-|         2 | 306.3212 |      0.2053 |       0 | 292.7012 | YES:--         |
-|         3 |   0.4188 |      0.0003 |   0.488 |   -8.815 | ---:NO         |
-|         4 | 113.5726 |      0.0942 |       0 | 104.8406 | YES:--         |
-|         5 |  39.9143 |      0.0329 |       0 |  30.7751 | YES:--         |
-|         6 |   1.4468 |      0.0012 |   0.384 |   -7.186 | ---:NO         |
-|         7 |  -4.4455 |     -0.0036 |   0.786 | -13.8587 | ---:NO         |
-|         8 |  53.8727 |      0.0486 |       0 |  45.0322 | YES:--         |
-|         9 |   4.0827 |      0.0034 |   0.235 |  -5.0839 | ---:NO         |
-|        10 |  -3.3001 |     -0.0028 |   0.761 | -11.9659 | ---:NO         |
-|        11 |   0.6156 |      0.0005 |   0.439 |  -8.0109 | ---:NO         |
+|         2 | 306.3212 |      0.2053 |       0 | 292.4531 | YES:--         |
+|         3 |   0.4188 |      0.0003 |   0.471 |  -7.9006 | ---:NO         |
+|         4 | 113.5726 |      0.0942 |       0 | 103.9548 | YES:--         |
+|         5 |  39.9143 |      0.0329 |       0 |  30.8581 | YES:--         |
+|         6 |   1.4468 |      0.0012 |   0.387 |  -7.4177 | ---:NO         |
+|         7 |  -4.4455 |     -0.0036 |   0.799 | -13.8373 | ---:NO         |
+|         8 |  53.8727 |      0.0486 |       0 |  45.0897 | YES:--         |
+|         9 |   4.0827 |      0.0034 |   0.216 |   -5.014 | ---:NO         |
+|        10 |  -3.3001 |     -0.0028 |   0.702 | -11.6815 | ---:NO         |
+|        11 |   0.6156 |      0.0005 |   0.444 |  -8.7326 | ---:NO         |
 
 ** Distance Traveled
 
@@ -280,12 +286,13 @@ results %>%
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - distance traveled
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "homogeneous",
   measure_column = "baseLog.agent_distance_traveleds",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -296,19 +303,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: homo_distance_traveled
+#+RESULTS[e1cceb05e85d55fb367bd45a5ca7995348c4a87e]: homo_distance_traveled
 | Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
-|         2 |   2.075 |      0.0431 |       0 |    1.652 | YES:--         |
-|         3 |  -0.118 |     -0.0033 |   0.754 |  -0.3941 | ---:NO         |
-|         4 | -1.4368 |     -0.0411 |       1 |  -1.6856 | ---:NO         |
-|         5 |  0.9213 |      0.0249 |       0 |    0.642 | YES:--         |
-|         6 |  0.1761 |      0.0049 |   0.129 |  -0.0759 | ---:NO         |
-|         7 |   2.821 |      0.0663 |       0 |   1.6498 | YES:--         |
-|         8 | -0.9548 |     -0.0307 |       1 |  -1.1838 | ---:NO         |
-|         9 |    0.05 |      0.0014 |   0.394 |  -0.2377 | ---:NO         |
-|        10 |  0.2126 |      0.0061 |   0.092 |  -0.0538 | ---:NO         |
-|        11 |  0.0732 |      0.0021 |   0.298 |  -0.1831 | ---:NO         |
+|         2 |   2.075 |      0.0431 |       0 |   1.6721 | YES:--         |
+|         3 |  -0.118 |     -0.0033 |    0.77 |  -0.3685 | ---:NO         |
+|         4 | -1.4368 |     -0.0411 |       1 |  -1.6842 | ---:NO         |
+|         5 |  0.9213 |      0.0249 |       0 |   0.6419 | YES:--         |
+|         6 |  0.1761 |      0.0049 |   0.139 |   -0.105 | ---:NO         |
+|         7 |   2.821 |      0.0663 |       0 |   1.6243 | YES:--         |
+|         8 | -0.9548 |     -0.0307 |       1 |  -1.1904 | ---:NO         |
+|         9 |    0.05 |      0.0014 |   0.418 |    -0.23 | ---:NO         |
+|        10 |  0.2126 |      0.0061 |   0.113 |  -0.0667 | ---:NO         |
+|        11 |  0.0732 |      0.0021 |   0.324 |   -0.195 | ---:NO         |
 
 ** PLE Energy
 
@@ -317,12 +324,13 @@ results %>%
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - PLE energy
-results <- analyze_all_parameters(
+results <- analyze_all_parameters_cached(
   sim_type = "homogeneous",
   measure_column = "baseLog.agent_ple_energys",
   data_dir = "data",
   B = 1000,
-  conf.level = 0.95
+  conf.level = 0.95,
+  cache_dir = ".localfiles"
 )
 
 results %>%
@@ -333,19 +341,19 @@ results %>%
   rename(Is.Significant = Is.Significant)
 #+end_src
 
-#+RESULTS: homo_ple_energy
+#+RESULTS[75e593f3aebbb1a52a95a1a06b25595ca0f3a28b]: homo_ple_energy
 | Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
-|         2 | 84.8302 |      0.0642 |       0 |  73.1588 | YES:--         |
-|         3 | -1.4808 |     -0.0015 |   0.638 |  -8.8996 | ---:NO         |
-|         4 | 28.6417 |      0.0287 |       0 |  20.9589 | YES:--         |
-|         5 |  8.7217 |      0.0082 |   0.039 |   0.6523 | YES:--         |
-|         6 |  3.9815 |       0.004 |   0.185 |  -3.5097 | ---:NO         |
-|         7 | 39.9121 |      0.0356 |       0 |  22.3338 | YES:--         |
-|         8 | 91.9377 |      0.0992 |       0 |  84.8414 | YES:--         |
-|         9 |   2.455 |      0.0024 |   0.288 |  -4.3502 | ---:NO         |
-|        10 |  4.5165 |      0.0046 |   0.151 |  -2.4212 | ---:NO         |
-|        11 |  3.4594 |      0.0035 |   0.211 |  -3.1523 | ---:NO         |
+|         2 | 84.8302 |      0.0642 |       0 |  73.6237 | YES:--         |
+|         3 | -1.4808 |     -0.0015 |   0.643 |  -8.5742 | ---:NO         |
+|         4 | 28.6417 |      0.0287 |       0 |  21.5077 | YES:--         |
+|         5 |  8.7217 |      0.0082 |   0.033 |   0.8806 | YES:--         |
+|         6 |  3.9815 |       0.004 |     0.2 |  -3.6269 | ---:NO         |
+|         7 | 39.9121 |      0.0356 |       0 |  19.8758 | YES:--         |
+|         8 | 91.9377 |      0.0992 |       0 |  84.3685 | YES:--         |
+|         9 |   2.455 |      0.0024 |   0.288 |  -5.1314 | ---:NO         |
+|        10 |  4.5165 |      0.0046 |   0.128 |  -2.1925 | ---:NO         |
+|        11 |  3.4594 |      0.0035 |   0.179 |   -3.131 | ---:NO         |
 
 * Overall Significance Summary
 
@@ -385,12 +393,13 @@ process_combination <- function(i) {
   measure <- measures[measure_idx]
   label <- measure_labels[measure_idx]
   
-  results <- analyze_all_parameters(
+  results <- analyze_all_parameters_cached(
     sim_type = sim_type,
     measure_column = measure,
     data_dir = "data",
     B = 1000,
-    conf.level = 0.95
+    conf.level = 0.95,
+    cache_dir = ".localfiles"
   )
   
   # Create column name combining sim_type and measurement
@@ -439,17 +448,17 @@ significance_table_transposed <- significance_table_transposed %>%
 significance_table_transposed
 #+end_src
 
-#+RESULTS: significance_summary
-| Category                  | Param.2 | Param.3 | Param.4 | Param.5 | Param.6 | Param.7 | Param.8 | Param.9 | Param.10 | Param.11 |
-|---------------------------+---------+---------+---------+---------+---------+---------+---------+---------+----------+----------|
-| hete.Time.Enabled         | YES     | NO      | YES     | NO      | NO      | NO      | YES     | NO      | NO       | NO       |
-| hete.Collision.Times      | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
-| hete.Distance.Traveled    | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
-| hete.PLE.Energy           | YES     | NO      | YES     | NO      | NO      | NO      | YES     | NO      | NO       | NO       |
-| homo.Time.Enabled         | YES     | NO      | YES     | NO      | NO      | YES     | YES     | NO      | NO       | NO       |
-| homo.Collision.Times      | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
-| homo.Distance.Traveled    | YES     | NO      | NO      | YES     | NO      | YES     | NO      | NO      | NO       | NO       |
-| homo.PLE.Energy           | YES     | NO      | YES     | YES     | NO      | YES     | YES     | NO      | NO       | NO       |
+#+RESULTS[0900ed25c51a6c7408d826e0100e5389519277ff]: significance_summary
+| Category               | P.2 | P.3 | P.4 | P.5 | P.6 | P.7 | P.8 | P.9 | P.10 | P.11 |
+|------------------------+-----+-----+-----+-----+-----+-----+-----+-----+------+------|
+| hete.Time.Enabled      | YES | NO  | YES | NO  | NO  | NO  | YES | NO  | NO   | NO   |
+| hete.Collision.Times   | YES | NO  | YES | YES | NO  | NO  | YES | NO  | NO   | NO   |
+| hete.Distance.Traveled | YES | NO  | YES | YES | NO  | NO  | YES | NO  | NO   | NO   |
+| hete.PLE.Energy        | YES | NO  | YES | NO  | NO  | NO  | YES | NO  | NO   | NO   |
+| homo.Time.Enabled      | YES | NO  | YES | NO  | NO  | YES | YES | NO  | NO   | NO   |
+| homo.Collision.Times   | YES | NO  | YES | YES | NO  | NO  | YES | NO  | NO   | NO   |
+| homo.Distance.Traveled | YES | NO  | NO  | YES | NO  | YES | NO  | NO  | NO   | NO   |
+| homo.PLE.Energy        | YES | NO  | YES | YES | NO  | YES | YES | NO  | NO   | NO   |
 
 * Comparative Analysis
 
@@ -489,12 +498,13 @@ process_combination <- function(i) {
   measure <- measures[measure_idx]
   label <- measure_labels[measure_idx]
   
-  results <- analyze_all_parameters(
+  results <- analyze_all_parameters_cached(
     sim_type = sim_type,
     measure_column = measure,
     data_dir = "data",
     B = 100,  # Reduced for summary computation
-    conf.level = 0.95
+    conf.level = 0.95,
+    cache_dir = ".localfiles"
   )
   
   results$Sim_Type <- sim_type
@@ -531,17 +541,17 @@ summary_df <- combined_df %>%
 summary_df
 #+end_src
 
-#+RESULTS: summary_statistics
-| Sim.Type      | Measurement          | N.Sgnf | Mean.Impact | Mean.Effect.Size | Max.Effect.Size |
-|---------------+----------------------+--------+-------------+------------------+-----------------|
-| heterogeneous | Time.Enabled         |      3 |     10.3302 |           0.0794 |          0.4898 |
-| heterogeneous | Collision.Times      |      4 |      70.213 |           0.0688 |          0.2995 |
-| heterogeneous | PLE.Energy           |      3 |     43.1101 |           0.0525 |          0.3275 |
-| homogeneous   | Time.Enabled         |      4 |      7.9289 |            0.051 |          0.2684 |
-| homogeneous   | Collision.Times      |      4 |     51.2499 |            0.038 |          0.2053 |
-| heterogeneous | Distance.Traveled    |      4 |      0.9169 |           0.0329 |          0.1874 |
-| homogeneous   | PLE.Energy           |      5 |     26.6975 |           0.0249 |          0.0992 |
-| homogeneous   | Distance.Traveled    |      3 |       0.382 |           0.0074 |          0.0663 |
+#+RESULTS[71aeb370de8e09275338abbedec32c0cb9b8ce71]: summary_statistics
+| Sim.Type      | Measurement       | N.Sgnf | Mean.Impact | Mean.Effect.Size | Max.Effect.Size |
+|---------------+-------------------+--------+-------------+------------------+-----------------|
+| heterogeneous | Time.Enabled      |      3 |     10.3302 |           0.0794 |          0.4898 |
+| heterogeneous | Collision.Times   |      4 |      70.213 |           0.0688 |          0.2995 |
+| heterogeneous | PLE.Energy        |      3 |     43.1101 |           0.0525 |          0.3275 |
+| homogeneous   | Time.Enabled      |      4 |      7.9289 |            0.051 |          0.2684 |
+| homogeneous   | Collision.Times   |      4 |     51.2499 |            0.038 |          0.2053 |
+| heterogeneous | Distance.Traveled |      4 |      0.9169 |           0.0329 |          0.1874 |
+| homogeneous   | PLE.Energy        |      5 |     26.6975 |           0.0249 |          0.0992 |
+| homogeneous   | Distance.Traveled |      3 |       0.382 |           0.0074 |          0.0663 |
 
 ** Parameter Ranking by Average Effect
 
@@ -572,12 +582,13 @@ process_combination <- function(i) {
   measure_idx <- combinations$measure_idx[i]
   measure <- measures[measure_idx]
   
-  results <- analyze_all_parameters(
+  results <- analyze_all_parameters_cached(
     sim_type = sim_type,
     measure_column = measure,
     data_dir = "data",
     B = 100,  # Reduced for ranking computation
-    conf.level = 0.95
+    conf.level = 0.95,
+    cache_dir = ".localfiles"
   )
   
   results$Sim_Type <- sim_type
@@ -614,7 +625,7 @@ parameter_ranking <- combined_df %>%
 parameter_ranking
 #+end_src
 
-#+RESULTS: parameter_ranking
+#+RESULTS[8f1bdf9a04ad361d6ccccd3175a1c9a1e920ab1f]: parameter_ranking
 | Parameter | Sim.Type      | N.Sgnf | Avg.Impact | Avg.Effect.Size | Max.Effect.Size |
 |-----------+---------------+--------+------------+-----------------+-----------------|
 |         8 | heterogeneous |      4 |   142.5343 |          0.3261 |          0.4898 |
@@ -624,8 +635,8 @@ parameter_ranking
 |         2 | homogeneous   |      4 |   101.1394 |          0.0923 |          0.2053 |
 |         4 | homogeneous   |      3 |    40.6777 |           0.056 |          0.1421 |
 |         7 | homogeneous   |      3 |    10.6897 |          0.0312 |          0.0663 |
-|         5 | homogeneous   |      2 |    12.5534 |          0.0175 |          0.0329 |
-|         5 | heterogeneous |      3 |     6.2918 |          0.0107 |          0.0203 |
+|         5 | homogeneous   |      3 |    12.5534 |          0.0175 |          0.0329 |
+|         5 | heterogeneous |      2 |     6.2918 |          0.0107 |          0.0203 |
 |         6 | homogeneous   |      0 |     1.5046 |          0.0032 |          0.0049 |
 |        10 | homogeneous   |      0 |      0.526 |          0.0031 |          0.0061 |
 |        11 | homogeneous   |      0 |     1.1853 |          0.0025 |          0.0039 |
@@ -675,12 +686,13 @@ process_combination <- function(i) {
   measure <- measures[measure_idx]
   label <- measure_labels[measure_idx]
   
-  results <- analyze_all_parameters(
+  results <- analyze_all_parameters_cached(
     sim_type = sim_type,
     measure_column = measure,
     data_dir = "data",
     B = 100,  # Reduced for sensitivity analysis
-    conf.level = 0.95
+    conf.level = 0.95,
+    cache_dir = ".localfiles"
   )
   
   results$Sim_Type <- sim_type
@@ -717,17 +729,17 @@ sensitivity_df <- combined_df %>%
 sensitivity_df
 #+end_src
 
-#+RESULTS: measurement_sensitivity
-| Measurement          | Sim.Type      | Avg.Effect.Size | SD.Effect.Size | Max.Effect.Size | N.Sgnf |
-|----------------------+---------------+-----------------+----------------+-----------------+--------|
-| Time.Enabled         | heterogeneous |          0.0794 |         0.1629 |          0.4898 |      3 |
-| Collision.Times      | heterogeneous |          0.0688 |         0.1137 |          0.2995 |      4 |
-| PLE.Energy           | heterogeneous |          0.0525 |         0.1064 |          0.3275 |      3 |
-| Time.Enabled         | homogeneous   |           0.051 |         0.0883 |          0.2684 |      4 |
-| Collision.Times      | homogeneous   |           0.038 |         0.0667 |          0.2053 |      4 |
-| Distance.Traveled    | heterogeneous |          0.0329 |         0.0621 |          0.1874 |      4 |
-| PLE.Energy           | homogeneous   |          0.0249 |         0.0333 |          0.0992 |      4 |
-| Distance.Traveled    | homogeneous   |          0.0074 |         0.0317 |          0.0663 |      3 |
+#+RESULTS[5d99beed11737aed77cb032512317f7a36584954]: measurement_sensitivity
+| Measurement       | Sim.Type      | Avg.Effect.Size | SD.Effect.Size | Max.Effect.Size | N.Sgnf |
+|-------------------+---------------+-----------------+----------------+-----------------+--------|
+| Time.Enabled      | heterogeneous |          0.0794 |         0.1629 |          0.4898 |      3 |
+| Collision.Times   | heterogeneous |          0.0688 |         0.1137 |          0.2995 |      4 |
+| PLE.Energy        | heterogeneous |          0.0525 |         0.1064 |          0.3275 |      3 |
+| Time.Enabled      | homogeneous   |           0.051 |         0.0883 |          0.2684 |      4 |
+| Collision.Times   | homogeneous   |           0.038 |         0.0667 |          0.2053 |      4 |
+| Distance.Traveled | heterogeneous |          0.0329 |         0.0621 |          0.1874 |      4 |
+| PLE.Energy        | homogeneous   |          0.0249 |         0.0333 |          0.0992 |      5 |
+| Distance.Traveled | homogeneous   |          0.0074 |         0.0317 |          0.0663 |      3 |
 
 * Interpretation Guidelines
 
