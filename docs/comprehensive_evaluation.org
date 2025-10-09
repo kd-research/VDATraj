@@ -32,13 +32,13 @@ The evaluation is organized into eight primary tables:
 
 Each table contains parameter indices 2-11 as rows and the following evaluation metrics as columns:
 
-- **Impact**: Impact variance (Var(Y_random) - Var(Y_same))
-- **Var_Same**: Same-parameter variance (noise baseline)
-- **Var_Rand**: Random-parameter variance (noise + signal)
-- **Effect_Size**: Normalized effect size (Impact / Var_Same)
-- **P_Value**: Bootstrap p-value for H0: Impact ≤ 0
-- **CI_Lower**: Lower bound of 95% confidence interval
-- **CI_Upper**: Upper bound of 95% confidence interval
+- **Impact**: Impact variance (Var(Y.random) - Var(Y.same))
+- **Var.Same**: Same-parameter variance (noise baseline)
+- **Var.Rand**: Random-parameter variance (noise + signal)
+- **Effect.Size**: Normalized effect size (Impact / Var.Same)
+- **P.Value**: Bootstrap p-value for H0: Impact ≤ 0
+- **CI.Lower**: Lower bound of 95% confidence interval
+- **CI.Upper**: Upper bound of 95% confidence interval
 
 ** Computational Parameters
 
@@ -66,12 +66,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: hetero_time_enabled
-| Parameter |  Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
 |         2 | 13.1213 |      0.0825 |       0 |  11.7998 | YES:--         |
 |         3 |  0.2228 |      0.0014 |   0.374 |  -0.8243 | ---:NO         |
@@ -101,12 +103,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: hetero_collision_times
-| Parameter |   Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |   Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+----------+-------------+---------+----------+----------------|
 |         2 | 206.8098 |      0.1814 |       0 | 196.9145 | YES:--         |
 |         3 |  -0.5416 |     -0.0004 |   0.543 |   -9.291 | ---:NO         |
@@ -136,12 +140,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: hetero_distance_traveled
-| Parameter |  Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
 |         2 |  3.0392 |       0.081 |       0 |   2.7293 | YES:--         |
 |         3 |  0.0142 |      0.0004 |   0.452 |  -0.2466 | ---:NO         |
@@ -171,12 +177,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: hetero_ple_energy
-| Parameter |   Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |   Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+----------+-------------+---------+----------+----------------|
 |         2 |  88.8163 |      0.0851 |       0 |  80.5547 | YES:--         |
 |         3 |   1.0141 |       0.001 |   0.419 |   -6.199 | ---:NO         |
@@ -208,12 +216,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: homo_time_enabled
-| Parameter |  Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
 |         2 | 11.3314 |      0.0567 |       0 |   9.6871 | YES:--         |
 |         3 | -0.1727 |     -0.0011 |   0.584 |  -1.2687 | ---:NO         |
@@ -243,12 +253,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: homo_collision_times
-| Parameter |   Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |   Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+----------+-------------+---------+----------+----------------|
 |         2 | 306.3212 |      0.2053 |       0 | 292.7012 | YES:--         |
 |         3 |   0.4188 |      0.0003 |   0.488 |   -8.815 | ---:NO         |
@@ -278,12 +290,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: homo_distance_traveled
-| Parameter |  Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
 |         2 |   2.075 |      0.0431 |       0 |    1.652 | YES:--         |
 |         3 |  -0.118 |     -0.0033 |   0.754 |  -0.3941 | ---:NO         |
@@ -313,12 +327,14 @@ results <- analyze_all_parameters(
 
 results %>%
   select(Parameter, Impact, Effect_Size, P_Value, CI_Lower) %>%
+  rename(Effect.Size = Effect_Size, P.Value = P_Value, CI.Lower = CI_Lower) %>%
   round(digit=4) %>%
-  mutate(Is_Significant = if_else(P_Value < 0.05, "YES:--", "---:NO"))
+  mutate(Is.Significant = if_else(P.Value < 0.05, "YES:--", "---:NO")) %>%
+  rename(Is.Significant = Is.Significant)
 #+end_src
 
 #+RESULTS: homo_ple_energy
-| Parameter |  Impact | Effect_Size | P_Value | CI_Lower | Is_Significant |
+| Parameter |  Impact | Effect.Size | P.Value | CI.Lower | Is.Significant |
 |-----------+---------+-------------+---------+----------+----------------|
 |         2 | 84.8302 |      0.0642 |       0 |  73.1588 | YES:--         |
 |         3 | -1.4808 |     -0.0015 |   0.638 |  -8.8996 | ---:NO         |
@@ -349,10 +365,10 @@ measures <- c(
 )
 
 measure_labels <- c(
-  "Time_Enabled",
-  "Collision_Times",
-  "Distance_Traveled",
-  "PLE_Energy"
+  "Time.Enabled",
+  "Collision.Times",
+  "Distance.Traveled",
+  "PLE.Energy"
 )
 
 # Create all combinations
@@ -378,9 +394,9 @@ process_combination <- function(i) {
   )
   
   # Create column name combining sim_type and measurement
-  col_name <- paste0(substring(sim_type, 1, 4), "_", label)
+  col_name <- paste0(substring(sim_type, 1, 4), ".", label)
   
-  # Extract only Parameter and Is_Significant
+  # Extract only Parameter and Is.Significant
   results_subset <- results %>%
     select(Parameter, P_Value) %>%
     mutate(!!col_name := if_else(P_Value < 0.05, "YES", "NO")) %>%
@@ -407,12 +423,12 @@ for (i in 2:length(all_results)) {
 significance_table_transposed <- significance_table %>%
   arrange(Parameter) %>%
   pivot_longer(cols = -Parameter, names_to = "Category", values_to = "Significant") %>%
-  pivot_wider(names_from = Parameter, values_from = Significant, names_prefix = "Param_")
+  pivot_wider(names_from = Parameter, values_from = Significant, names_prefix = "P.")
 
 # Reorder categories logically (heterogeneous first, then homogeneous)
 category_order <- c(
-  "hete_Time_Enabled", "hete_Collision_Times", "hete_Distance_Traveled", "hete_PLE_Energy",
-  "homo_Time_Enabled", "homo_Collision_Times", "homo_Distance_Traveled", "homo_PLE_Energy"
+  "hete.Time.Enabled", "hete.Collision.Times", "hete.Distance.Traveled", "hete.PLE.Energy",
+  "homo.Time.Enabled", "homo.Collision.Times", "homo.Distance.Traveled", "homo.PLE.Energy"
 )
 
 significance_table_transposed <- significance_table_transposed %>%
@@ -424,16 +440,16 @@ significance_table_transposed
 #+end_src
 
 #+RESULTS: significance_summary
-| Category               | Param_2 | Param_3 | Param_4 | Param_5 | Param_6 | Param_7 | Param_8 | Param_9 | Param_10 | Param_11 |
-|------------------------+---------+---------+---------+---------+---------+---------+---------+---------+----------+----------|
-| hete_Time_Enabled      | YES     | NO      | YES     | NO      | NO      | NO      | YES     | NO      | NO       | NO       |
-| hete_Collision_Times   | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
-| hete_Distance_Traveled | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
-| hete_PLE_Energy        | YES     | NO      | YES     | NO      | NO      | NO      | YES     | NO      | NO       | NO       |
-| homo_Time_Enabled      | YES     | NO      | YES     | NO      | NO      | YES     | YES     | NO      | NO       | NO       |
-| homo_Collision_Times   | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
-| homo_Distance_Traveled | YES     | NO      | NO      | YES     | NO      | YES     | NO      | NO      | NO       | NO       |
-| homo_PLE_Energy        | YES     | NO      | YES     | YES     | NO      | YES     | YES     | NO      | NO       | NO       |
+| Category                  | Param.2 | Param.3 | Param.4 | Param.5 | Param.6 | Param.7 | Param.8 | Param.9 | Param.10 | Param.11 |
+|---------------------------+---------+---------+---------+---------+---------+---------+---------+---------+----------+----------|
+| hete.Time.Enabled         | YES     | NO      | YES     | NO      | NO      | NO      | YES     | NO      | NO       | NO       |
+| hete.Collision.Times      | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
+| hete.Distance.Traveled    | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
+| hete.PLE.Energy           | YES     | NO      | YES     | NO      | NO      | NO      | YES     | NO      | NO       | NO       |
+| homo.Time.Enabled         | YES     | NO      | YES     | NO      | NO      | YES     | YES     | NO      | NO       | NO       |
+| homo.Collision.Times      | YES     | NO      | YES     | YES     | NO      | NO      | YES     | NO      | NO       | NO       |
+| homo.Distance.Traveled    | YES     | NO      | NO      | YES     | NO      | YES     | NO      | NO      | NO       | NO       |
+| homo.PLE.Energy           | YES     | NO      | YES     | YES     | NO      | YES     | YES     | NO      | NO       | NO       |
 
 * Comparative Analysis
 
@@ -453,10 +469,10 @@ measures <- c(
 )
 
 measure_labels <- c(
-  "Time_Enabled",
-  "Collision_Times",
-  "Distance_Traveled",
-  "PLE_Energy"
+  "Time.Enabled",
+  "Collision.Times",
+  "Distance.Traveled",
+  "PLE.Energy"
 )
 
 # Create all combinations of sim_type and measure
@@ -502,29 +518,30 @@ combined_df <- do.call(rbind, all_results)
 summary_df <- combined_df %>%
   group_by(Sim_Type, Measurement) %>%
   summarise(
-    N_Sgnf = sum(P_Value < 0.05, na.rm = TRUE),
-    Mean_Impact = mean(Impact, na.rm = TRUE),
-    Mean_Effect_Size = mean(Effect_Size, na.rm = TRUE),
-    Max_Effect_Size = max(Effect_Size, na.rm = TRUE),
+    N.Sgnf = sum(P_Value < 0.05, na.rm = TRUE),
+    Mean.Impact = mean(Impact, na.rm = TRUE),
+    Mean.Effect.Size = mean(Effect_Size, na.rm = TRUE),
+    Max.Effect.Size = max(Effect_Size, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  arrange(desc(Mean_Effect_Size)) %>%
-  mutate(across(where(is.numeric), ~round(., digits=4)))
+  arrange(desc(Mean.Effect.Size)) %>%
+  mutate(across(where(is.numeric), ~round(., digits=4))) %>%
+  rename(Sim.Type = Sim_Type)
 
 summary_df
 #+end_src
 
 #+RESULTS: summary_statistics
-| Sim_Type      | Measurement       | N_Sgnf | Mean_Impact | Mean_Effect_Size | Max_Effect_Size |
-|---------------+-------------------+--------+-------------+------------------+-----------------|
-| heterogeneous | Time_Enabled      |      3 |     10.3302 |           0.0794 |          0.4898 |
-| heterogeneous | Collision_Times   |      4 |      70.213 |           0.0688 |          0.2995 |
-| heterogeneous | PLE_Energy        |      3 |     43.1101 |           0.0525 |          0.3275 |
-| homogeneous   | Time_Enabled      |      4 |      7.9289 |            0.051 |          0.2684 |
-| homogeneous   | Collision_Times   |      4 |     51.2499 |            0.038 |          0.2053 |
-| heterogeneous | Distance_Traveled |      4 |      0.9169 |           0.0329 |          0.1874 |
-| homogeneous   | PLE_Energy        |      5 |     26.6975 |           0.0249 |          0.0992 |
-| homogeneous   | Distance_Traveled |      3 |       0.382 |           0.0074 |          0.0663 |
+| Sim.Type      | Measurement          | N.Sgnf | Mean.Impact | Mean.Effect.Size | Max.Effect.Size |
+|---------------+----------------------+--------+-------------+------------------+-----------------|
+| heterogeneous | Time.Enabled         |      3 |     10.3302 |           0.0794 |          0.4898 |
+| heterogeneous | Collision.Times      |      4 |      70.213 |           0.0688 |          0.2995 |
+| heterogeneous | PLE.Energy           |      3 |     43.1101 |           0.0525 |          0.3275 |
+| homogeneous   | Time.Enabled         |      4 |      7.9289 |            0.051 |          0.2684 |
+| homogeneous   | Collision.Times      |      4 |     51.2499 |            0.038 |          0.2053 |
+| heterogeneous | Distance.Traveled    |      4 |      0.9169 |           0.0329 |          0.1874 |
+| homogeneous   | PLE.Energy           |      5 |     26.6975 |           0.0249 |          0.0992 |
+| homogeneous   | Distance.Traveled    |      3 |       0.382 |           0.0074 |          0.0663 |
 
 ** Parameter Ranking by Average Effect
 
@@ -584,20 +601,21 @@ combined_df <- do.call(rbind, all_results)
 parameter_ranking <- combined_df %>%
   group_by(Parameter, Sim_Type) %>%
   summarise(
-    N_Sgnf = sum(P_Value < 0.05, na.rm = TRUE),
-    Avg_Impact = mean(Impact, na.rm = TRUE),
-    Avg_Effect_Size = mean(Effect_Size, na.rm = TRUE),
-    Max_Effect_Size = max(Effect_Size, na.rm = TRUE),
+    N.Sgnf = sum(P_Value < 0.05, na.rm = TRUE),
+    Avg.Impact = mean(Impact, na.rm = TRUE),
+    Avg.Effect.Size = mean(Effect_Size, na.rm = TRUE),
+    Max.Effect.Size = max(Effect_Size, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  arrange(desc(Avg_Effect_Size)) %>%
-  mutate(across(where(is.numeric), ~round(., digits=4)))
+  arrange(desc(Avg.Effect.Size)) %>%
+  mutate(across(where(is.numeric), ~round(., digits=4))) %>%
+  rename(Sim.Type = Sim_Type)
 
 parameter_ranking
 #+end_src
 
 #+RESULTS: parameter_ranking
-| Parameter | Sim_Type      | N_Sgnf | Avg_Impact | Avg_Effect_Size | Max_Effect_Size |
+| Parameter | Sim.Type      | N.Sgnf | Avg.Impact | Avg.Effect.Size | Max.Effect.Size |
 |-----------+---------------+--------+------------+-----------------+-----------------|
 |         8 | heterogeneous |      4 |   142.5343 |          0.3261 |          0.4898 |
 |         4 | heterogeneous |      4 |    92.5673 |          0.1533 |          0.2346 |
@@ -637,10 +655,10 @@ measures <- c(
 )
 
 measure_labels <- c(
-  "Time_Enabled",
-  "Collision_Times",
-  "Distance_Traveled",
-  "PLE_Energy"
+  "Time.Enabled",
+  "Collision.Times",
+  "Distance.Traveled",
+  "PLE.Energy"
 )
 
 # Create all combinations
@@ -686,29 +704,30 @@ combined_df <- do.call(rbind, all_results)
 sensitivity_df <- combined_df %>%
   group_by(Measurement, Sim_Type) %>%
   summarise(
-    Avg_Effect_Size = mean(Effect_Size, na.rm = TRUE),
-    SD_Effect_Size = sd(Effect_Size, na.rm = TRUE),
-    Max_Effect_Size = max(Effect_Size, na.rm = TRUE),
-    N_Sgnf = sum(P_Value < 0.05, na.rm = TRUE),
+    Avg.Effect.Size = mean(Effect_Size, na.rm = TRUE),
+    SD.Effect.Size = sd(Effect_Size, na.rm = TRUE),
+    Max.Effect.Size = max(Effect_Size, na.rm = TRUE),
+    N.Sgnf = sum(P_Value < 0.05, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  arrange(desc(Avg_Effect_Size)) %>%
-  mutate(across(where(is.numeric), ~round(., digits=4)))
+  arrange(desc(Avg.Effect.Size)) %>%
+  mutate(across(where(is.numeric), ~round(., digits=4))) %>%
+  rename(Sim.Type = Sim_Type)
 
 sensitivity_df
 #+end_src
 
 #+RESULTS: measurement_sensitivity
-| Measurement       | Sim_Type      | Avg_Effect_Size | SD_Effect_Size | Max_Effect_Size | N_Sgnf |
-|-------------------+---------------+-----------------+----------------+-----------------+--------|
-| Time_Enabled      | heterogeneous |          0.0794 |         0.1629 |          0.4898 |      3 |
-| Collision_Times   | heterogeneous |          0.0688 |         0.1137 |          0.2995 |      4 |
-| PLE_Energy        | heterogeneous |          0.0525 |         0.1064 |          0.3275 |      3 |
-| Time_Enabled      | homogeneous   |           0.051 |         0.0883 |          0.2684 |      4 |
-| Collision_Times   | homogeneous   |           0.038 |         0.0667 |          0.2053 |      4 |
-| Distance_Traveled | heterogeneous |          0.0329 |         0.0621 |          0.1874 |      4 |
-| PLE_Energy        | homogeneous   |          0.0249 |         0.0333 |          0.0992 |      4 |
-| Distance_Traveled | homogeneous   |          0.0074 |         0.0317 |          0.0663 |      3 |
+| Measurement          | Sim.Type      | Avg.Effect.Size | SD.Effect.Size | Max.Effect.Size | N.Sgnf |
+|----------------------+---------------+-----------------+----------------+-----------------+--------|
+| Time.Enabled         | heterogeneous |          0.0794 |         0.1629 |          0.4898 |      3 |
+| Collision.Times      | heterogeneous |          0.0688 |         0.1137 |          0.2995 |      4 |
+| PLE.Energy           | heterogeneous |          0.0525 |         0.1064 |          0.3275 |      3 |
+| Time.Enabled         | homogeneous   |           0.051 |         0.0883 |          0.2684 |      4 |
+| Collision.Times      | homogeneous   |           0.038 |         0.0667 |          0.2053 |      4 |
+| Distance.Traveled    | heterogeneous |          0.0329 |         0.0621 |          0.1874 |      4 |
+| PLE.Energy           | homogeneous   |          0.0249 |         0.0333 |          0.0992 |      4 |
+| Distance.Traveled    | homogeneous   |          0.0074 |         0.0317 |          0.0663 |      3 |
 
 * Interpretation Guidelines
 
@@ -727,9 +746,9 @@ Based on the theoretical framework:
 
 ** Confidence Interval Interpretation
 
-- **CI_Lower > 0**: Strong evidence of positive parameter influence
-- **CI_Lower ≤ 0, CI_Upper > 0**: Uncertain effect, may need larger sample size
-- **CI_Upper ≤ 0**: Evidence against parameter influence
+- **CI.Lower > 0**: Strong evidence of positive parameter influence
+- **CI.Lower ≤ 0, CI.Upper > 0**: Uncertain effect, may need larger sample size
+- **CI.Upper ≤ 0**: Evidence against parameter influence
 
 * Conclusions
 
