@@ -16,6 +16,16 @@ This document presents a comprehensive evaluation of parameter influence across 
 
 Building upon the theoretical framework established in =theory.org= and validated through controlled experiments in =verification.org=, this comprehensive evaluation applies the variance decomposition method to the complete dataset collection. Each parameter-measurement combination is assessed using the bootstrap impact test, yielding quantitative estimates of parameter influence magnitude, statistical significance, and effect size.
 
+** Simulation Types
+
+This evaluation distinguishes between two fundamental experimental conditions:
+
+- **Homogeneous Simulations**: All agents in a scenario share identical parameter values. This configuration tests how changing a parameter uniformly across the entire population affects collective behavior.
+
+- **Heterogeneous Simulations**: Each agent has a different value for the active parameter being tested, while all other parameters remain constant across agents. This configuration reveals whether parameter diversity within a population influences outcomes, which is particularly important for understanding bi-directional interactions where agents with different characteristics encounter each other.
+
+The distinction between these conditions is critical for interpretation. Some parameters may show influence only when uniformly applied (homogeneous) or only when varied across agents (heterogeneous), revealing different aspects of how parameters shape pedestrian dynamics.
+
 ** Evaluation Structure
 
 The evaluation is organized into eight primary tables:
@@ -46,6 +56,25 @@ All analyses use the following parameters:
 - Bootstrap iterations: B = 1000
 - Confidence level: 95%
 - Alternative hypothesis: "greater" (Impact > 0)
+
+* Parameter Descriptions
+
+The following table describes each of the 10 parameters (indices 2-11) analyzed in this evaluation. Each parameter represents a key characteristic of pedestrian behavior or physical properties in the simulation model.
+
+| PID | Parameter Key          | Lower Bound | Upper Bound | Description                                                                             |
+|-----+------------------------+-------------+-------------+-----------------------------------------------------------------------------------------|
+|   2 | cogp_agent_radius      |        0.15 |         0.3 | Physical radius of the pedestrian's body in meters                                      |
+|   3 | cogp_mass              |        60.0 |       100.0 | Body mass of the pedestrian in kilograms                                                |
+|   4 | cogp_max_speed         |         1.0 |         2.0 | Maximum walking speed in meters per second                                              |
+|   5 | cogp_max_force         |         1.0 |         2.0 | Maximum physical force that can be exerted by the pedestrian in Newtons                 |
+|   6 | cogp_query_radius      |         0.5 |         1.5 | Radius within which a pedestrian detects and interacts with other pedestrians in meters |
+|   7 | cogp_vision_phi        |        0.78 |        2.35 | Angular width of the pedestrian's visual field in radians                               |
+|   8 | cogp_vision_tau        |         0.1 |         1.0 | Visual perception reaction time in seconds                                              |
+|   9 | cogp_vision_resolution |        10.0 |       100.0 | Number of sampling directions or rays within the visual field                           |
+|  10 | cogp_vision_range      |         1.0 |        20.0 | Maximum distance of visual perception in meters                                         |
+|  11 | cogp_k                 |      2000.0 |      8000.0 | Repulsion coefficient for physical interactions between pedestrians in Newtons          |
+
+These parameter ranges define the experimental space over which the variance decomposition analysis is performed. Understanding these parameters is essential for interpreting the impact measurements and effect sizes reported in subsequent sections.
 
 * Heterogeneous Simulations
 
@@ -459,6 +488,58 @@ significance_table_transposed
 | homo.Collision.Times   | YES | NO  | YES | YES | NO  | NO  | YES | NO  | NO   | NO   |
 | homo.Distance.Traveled | YES | NO  | NO  | YES | NO  | YES | NO  | NO  | NO   | NO   |
 | homo.PLE.Energy        | YES | NO  | YES | YES | NO  | YES | YES | NO  | NO   | NO   |
+
+** Parameter-by-Parameter Impact Analysis
+
+*** P.2 - Agent Radius (cogp_agent_radius)
+*Impact: Highly Significant* (8/8 categories)
+
+The physical radius of pedestrians shows consistent and significant influence across all measurement categories and simulation types. This parameter affects both heterogeneous and homogeneous simulations uniformly, indicating that body size is a fundamental determinant of pedestrian dynamics. Larger agent radii increase collision probability, reduce available space, and affect overall movement efficiency.
+
+*** P.3 - Body Mass (cogp_mass)
+*Impact: Not Significant* (0/8 categories)
+
+Body mass shows no statistically significant influence on any measurement category in either simulation type. This suggests that within the tested range (60-100 kg), mass variations do not meaningfully affect the simulation outcomes. The force-based interactions in the model may be primarily governed by other parameters rather than inertial effects.
+
+*** P.4 - Maximum Speed (cogp_max_speed)
+*Impact: Highly Significant* (6/8 categories)
+
+Maximum walking speed is one of the most influential parameters, showing significance in 6 out of 8 categories. Notably, it does not significantly affect distance traveled in homogeneous simulations, suggesting complex interactions between speed capacity and environmental constraints. Higher maximum speeds generally increase collision rates and energy consumption while enabling faster task completion.
+
+*** P.5 - Maximum Force (cogp_max_force)
+*Impact: Moderately Significant* (4/8 categories)
+
+Maximum force shows selective influence, primarily affecting collision times and distance traveled across both simulation types, and impacting PLE energy in homogeneous simulations. This parameter appears less influential for time-enabled measurements in heterogeneous conditions, suggesting its effects are context-dependent and related to physical interaction intensity.
+
+*** P.6 - Query Radius (cogp_query_radius)
+*Impact: Not Significant* (0/8 categories)
+
+The radius within which pedestrians detect other agents shows no significant impact on any measurement. This unexpected result suggests that within the tested range (0.5-1.5 m), the detection radius does not meaningfully alter pedestrian behavior, possibly because the visual perception system (governed by other parameters) dominates the awareness mechanism.
+
+*** P.7 - Vision Field Angle (cogp_vision_phi)
+*Impact: Moderately Significant* (3/8 categories, homogeneous only)
+
+The angular width of the visual field shows significant influence exclusively in homogeneous simulations, affecting time enabled, distance traveled, and PLE energy. The absence of impact in heterogeneous simulations is particularly revealing: when agents have varying vision field angles, the bi-directional nature of pedestrian interactions means that the agent with the wider field of view will always detect the interaction first and initiate avoidance behavior. This asymmetry effectively neutralizes the parameter's influence at the population level, as outcomes are dominated by the more perceptive agent in each interaction. In contrast, when all agents share the same vision angle (homogeneous), the parameter's effect on collective behavior becomes measurable. Wider visual fields enable better obstacle avoidance and more efficient navigation when uniformly applied.
+
+*** P.8 - Visual Reaction Time (cogp_vision_tau)
+*Impact: Highly Significant* (6/8 categories)
+
+Visual perception reaction time emerges as the most influential parameter overall, showing the highest effect sizes in heterogeneous simulations and significant impact in 6 out of 8 categories. Faster reaction times (lower tau values) enable quicker response to dynamic obstacles, reducing collisions and improving overall efficiency. This parameter's dominance highlights the critical role of perception speed in pedestrian dynamics.
+
+*** P.9 - Vision Resolution (cogp_vision_resolution)
+*Impact: Not Significant* (0/8 categories)
+
+The number of sampling directions within the visual field shows no significant influence on any measurement category. Within the tested range (10-100 rays), resolution variations do not meaningfully affect outcomes, suggesting that even relatively coarse visual sampling is sufficient for effective navigation in these scenarios.
+
+*** P.10 - Vision Range (cogp_vision_range)
+*Impact: Not Significant* (0/8 categories)
+
+Maximum visual perception distance shows no significant impact across all measurements. This counterintuitive result suggests that pedestrians' behavior is primarily governed by nearby obstacles and immediate surroundings rather than distant features, or that the minimum tested range (1 m) is already sufficient for effective navigation.
+
+*** P.11 - Repulsion Coefficient (cogp_k)
+*Impact: Not Significant* (0/8 categories)
+
+The physical repulsion coefficient for pedestrian interactions shows no significant influence on any measurement category. Within the tested range (2000-8000 N), variations in repulsion strength do not meaningfully alter simulation outcomes, possibly because collisions are primarily avoided through visual perception rather than physical forces.
 
 * Comparative Analysis
 
