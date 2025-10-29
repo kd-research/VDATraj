@@ -2115,6 +2115,318 @@ grid_plot <- grid.arrange(grobs = plot_list, ncol = 5)
 [[file:outputs/homo_time_heatmap.png]]
 
 
+* Overall Significance Summary
+
+This section provides a consolidated view of parameter sensitivity across all measurement categories and simulation types, enabling direct comparison of parameter influence patterns.
+
+** Significant Pairs Summary Table
+
+The following table summarizes the number of significant pairwise comparisons (p < 0.005) for each parameter across all metrics and simulation types. Higher values indicate stronger parameter influence on the respective outcome measure.
+
+#+name: overall_significance_summary
+#+begin_src R
+# Generate overall significance summary table
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+
+# Load results from cog2-result-db.json (JSONL format - one JSON per line)
+results_list <- readLines('cog2-result-db.json') %>%
+  lapply(function(line) fromJSON(line))
+
+# Transform all results into a clean data frame
+results_df <- lapply(results_list, function(result) {
+  # Extract PID and type from first dataset name
+  dataset_name <- result$datasets[1]
+  parts <- strsplit(dataset_name, "_")[[1]]
+  pid <- as.numeric(parts[2])
+  type <- parts[4]  # "homogeneous" or "heterogeneous"
+  
+  # Get category
+  category <- result$category
+  
+  # Get t-test results
+  ttest_results <- result$t_test_results
+  pvalues <- as.numeric(ttest_results[["p-value"]])
+  
+  # Return data frame with metadata and t-test results
+  data.frame(
+    pid = pid,
+    type = type,
+    category = category,
+    pvalue = pvalues,
+    stringsAsFactors = FALSE
+  )
+}) %>% bind_rows()
+
+# Calculate significance counts for each PID, type, and category
+significance_summary <- results_df %>%
+  group_by(pid, type, category) %>%
+  summarise(
+    Significant_Pairs_p005 = sum(pvalue < 0.005, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+# Map category names to display names
+category_map <- c(
+  "collision" = "Collision.Times",
+  "energy" = "PLE.Energy",
+  "length" = "Distance.Traveled",
+  "time" = "Time.Enabled"
+)
+
+# Create display category names with type prefix
+significance_summary <- significance_summary %>%
+  mutate(
+    type_prefix = ifelse(type == "heterogeneous", "hete", "homo"),
+    category_display = category_map[category],
+    Category = paste(type_prefix, category_display, sep = ".")
+  )
+
+# Pivot to wide format
+summary_table <- significance_summary %>%
+  select(Category, pid, Significant_Pairs_p005) %>%
+  pivot_wider(
+    names_from = pid,
+    values_from = Significant_Pairs_p005,
+    names_prefix = "P."
+  ) %>%
+  # Order rows: heterogeneous first, then homogeneous
+  arrange(factor(Category, levels = c(
+    "hete.Collision.Times",
+    "hete.PLE.Energy",
+    "hete.Distance.Traveled",
+    "hete.Time.Enabled",
+    "homo.Collision.Times",
+    "homo.PLE.Energy",
+    "homo.Distance.Traveled",
+    "homo.Time.Enabled"
+  )))
+
+summary_table
+#+end_src
+
+#+RESULTS[3b701982a11124a3a309a4d8410dcf574cd44c13]: overall_significance_summary
+| Category               | P.2 | P.3 | P.4 | P.5 | P.6 | P.7 | P.8 | P.9 | P.10 | P.11 |
+|------------------------+-----+-----+-----+-----+-----+-----+-----+-----+------+------|
+| hete.Collision.Times   |  10 |   4 |  10 |   9 |   0 |   4 |  10 |   5 |    6 |    4 |
+| hete.PLE.Energy        |   8 |   4 |  10 |   8 |   0 |   6 |   9 |   5 |    5 |    7 |
+| hete.Distance.Traveled |   9 |   4 |  10 |  10 |   0 |   7 |  10 |   4 |    6 |    8 |
+| hete.Time.Enabled      |   8 |   3 |  10 |   7 |   1 |   7 |  10 |   5 |    4 |    5 |
+| homo.Collision.Times   |   8 |   2 |   9 |   8 |   0 |   5 |  10 |   6 |    4 |    6 |
+| homo.PLE.Energy        |   8 |   2 |   9 |   8 |   0 |   8 |   9 |   4 |    6 |    9 |
+| homo.Distance.Traveled |   8 |   4 |   9 |   7 |   0 |   9 |   9 |   2 |    7 |    9 |
+| homo.Time.Enabled      |   8 |   1 |  10 |   5 |   0 |   7 |  10 |   6 |    6 |    8 |
+
+** Parameter Sensitivity by Measurement Category
+
+This table aggregates parameter sensitivity across all parameters for each measurement category and simulation type, showing the mean, minimum, and maximum number of significant pairs (p < 0.005) per parameter.
+
+#+name: measurement_sensitivity_summary
+#+begin_src R
+# Generate measurement-level sensitivity summary
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+
+# Load results from cog2-result-db.json (JSONL format - one JSON per line)
+results_list <- readLines('cog2-result-db.json') %>%
+  lapply(function(line) fromJSON(line))
+
+# Transform all results into a clean data frame
+results_df <- lapply(results_list, function(result) {
+  # Extract PID and type from first dataset name
+  dataset_name <- result$datasets[1]
+  parts <- strsplit(dataset_name, "_")[[1]]
+  pid <- as.numeric(parts[2])
+  type <- parts[4]  # "homogeneous" or "heterogeneous"
+  
+  # Get category
+  category <- result$category
+  
+  # Get t-test results
+  ttest_results <- result$t_test_results
+  pvalues <- as.numeric(ttest_results[["p-value"]])
+  
+  # Return data frame with metadata and t-test results
+  data.frame(
+    pid = pid,
+    type = type,
+    category = category,
+    pvalue = pvalues,
+    stringsAsFactors = FALSE
+  )
+}) %>% bind_rows()
+
+# Calculate significance counts for each PID, type, and category
+significance_by_param <- results_df %>%
+  group_by(pid, type, category) %>%
+  summarise(
+    Significant_Pairs_p005 = sum(pvalue < 0.005, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+# Map category names to display names
+category_map <- c(
+  "collision" = "Collision.Times",
+  "energy" = "PLE.Energy",
+  "length" = "Distance.Traveled",
+  "time" = "Time.Enabled"
+)
+
+# Aggregate statistics across parameters for each type-category combination
+measurement_summary <- significance_by_param %>%
+  mutate(
+    Sim.Type = ifelse(type == "heterogeneous", "heterogeneous", "homogeneous"),
+    Measurement = category_map[category]
+  ) %>%
+  group_by(Sim.Type, Measurement) %>%
+  summarise(
+    Mean.Sgnf.P005 = mean(Significant_Pairs_p005),
+    Min.Sgnf.P005 = min(Significant_Pairs_p005),
+    Max.Sgnf.P005 = max(Significant_Pairs_p005),
+    .groups = 'drop'
+  ) %>%
+  # Order by Mean.Sgnf.P005 descending
+  arrange(desc(Mean.Sgnf.P005))
+
+measurement_summary
+#+end_src
+
+#+RESULTS[843ab47e738510ca5b45a5ccfede033d238070b5]: measurement_sensitivity_summary
+| Sim.Type      | Measurement       | Mean.Sgnf.P005 | Min.Sgnf.P005 | Max.Sgnf.P005 |
+|---------------+-------------------+----------------+---------------+---------------|
+| heterogeneous | Distance.Traveled |            6.8 |             0 |            10 |
+| homogeneous   | Distance.Traveled |            6.4 |             0 |             9 |
+| homogeneous   | PLE.Energy        |            6.3 |             0 |             9 |
+| heterogeneous | Collision.Times   |            6.2 |             0 |            10 |
+| heterogeneous | PLE.Energy        |            6.2 |             0 |            10 |
+| homogeneous   | Time.Enabled      |            6.1 |             0 |            10 |
+| heterogeneous | Time.Enabled      |              6 |             1 |            10 |
+| homogeneous   | Collision.Times   |            5.8 |             0 |            10 |
+
+** Parameter Sensitivity by Parameter ID
+
+This table aggregates parameter sensitivity across all measurement categories for each parameter and simulation type, showing the mean, minimum, and maximum number of significant pairs (p < 0.005) per measurement category.
+
+#+name: parameter_sensitivity_summary
+#+begin_src R
+# Generate parameter-level sensitivity summary
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+
+# Load results from cog2-result-db.json (JSONL format - one JSON per line)
+results_list <- readLines('cog2-result-db.json') %>%
+  lapply(function(line) fromJSON(line))
+
+# Transform all results into a clean data frame
+results_df <- lapply(results_list, function(result) {
+  # Extract PID and type from first dataset name
+  dataset_name <- result$datasets[1]
+  parts <- strsplit(dataset_name, "_")[[1]]
+  pid <- as.numeric(parts[2])
+  type <- parts[4]  # "homogeneous" or "heterogeneous"
+  
+  # Get category
+  category <- result$category
+  
+  # Get t-test results
+  ttest_results <- result$t_test_results
+  pvalues <- as.numeric(ttest_results[["p-value"]])
+  
+  # Return data frame with metadata and t-test results
+  data.frame(
+    pid = pid,
+    type = type,
+    category = category,
+    pvalue = pvalues,
+    stringsAsFactors = FALSE
+  )
+}) %>% bind_rows()
+
+# Calculate significance counts for each PID, type, and category
+significance_by_param <- results_df %>%
+  group_by(pid, type, category) %>%
+  summarise(
+    Significant_Pairs_p005 = sum(pvalue < 0.005, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+# Aggregate statistics across measurement categories for each type-parameter combination
+parameter_summary <- significance_by_param %>%
+  mutate(
+    Sim.Type = ifelse(type == "heterogeneous", "heterogeneous", "homogeneous"),
+    Parameter.Id = paste0(pid)
+  ) %>%
+  group_by(Sim.Type, Parameter.Id) %>%
+  summarise(
+    Mean.Sgnf.P005 = mean(Significant_Pairs_p005),
+    Min.Sgnf.P005 = min(Significant_Pairs_p005),
+    Max.Sgnf.P005 = max(Significant_Pairs_p005),
+    .groups = 'drop'
+  ) %>%
+  # Order by Mean.Sgnf.P005 descending
+  arrange(desc(Mean.Sgnf.P005))
+
+parameter_summary
+#+end_src
+
+#+RESULTS[6973531330aa426c8909680a52aaf33027afd667]: parameter_sensitivity_summary
+| Sim.Type      | Parameter.Id | Mean.Sgnf.P005 | Min.Sgnf.P005 | Max.Sgnf.P005 |
+|---------------+--------------+----------------+---------------+---------------|
+| heterogeneous |            4 |             10 |            10 |            10 |
+| heterogeneous |            8 |           9.75 |             9 |            10 |
+| homogeneous   |            8 |            9.5 |             9 |            10 |
+| homogeneous   |            4 |           9.25 |             9 |            10 |
+| heterogeneous |            2 |           8.75 |             8 |            10 |
+| heterogeneous |            5 |            8.5 |             7 |            10 |
+| homogeneous   |           11 |              8 |             6 |             9 |
+| homogeneous   |            2 |              8 |             8 |             8 |
+| homogeneous   |            7 |           7.25 |             5 |             9 |
+| homogeneous   |            5 |              7 |             5 |             8 |
+| heterogeneous |           11 |              6 |             4 |             8 |
+| heterogeneous |            7 |              6 |             4 |             7 |
+| homogeneous   |           10 |           5.75 |             4 |             7 |
+| heterogeneous |           10 |           5.25 |             4 |             6 |
+| heterogeneous |            9 |           4.75 |             4 |             5 |
+| homogeneous   |            9 |            4.5 |             2 |             6 |
+| heterogeneous |            3 |           3.75 |             3 |             4 |
+| homogeneous   |            3 |           2.25 |             1 |             4 |
+| heterogeneous |            6 |           0.25 |             0 |             1 |
+| homogeneous   |            6 |              0 |             0 |             0 |
+
+** Integrated Analysis and Key Findings
+
+*** Parameter Classification by Influence Level
+
+Parameters are classified into four tiers based on mean significant pairs (p < 0.005) across all metrics:
+
+- **Tier 1 (Mean > 8)**: P.4 (max speed, 9.25-10.0), P.8 (vision tau, 9.5-9.75), P.2 (agent radius, 8.0-8.75) — critical for model behavior
+- **Tier 2 (Mean 6-8)**: P.5 (max force, 7.0-8.5), P.11 (repulsion k, 6.0-8.0), P.7 (vision phi, 6.0-7.25) — substantial variable influence
+- **Tier 3 (Mean 3-6)**: P.10 (vision range, 5.25-5.75), P.9 (vision resolution, 4.5-4.75), P.3 (mass, 2.25-3.75) — context-dependent effects
+- **Tier 4 (Mean < 1)**: P.6 (query radius, 0.0-0.25) — negligible influence, can be fixed or removed
+
+*** Measurement Category Patterns
+
+All measurements show substantial parameter sensitivity (mean 5.8-6.8 significant pairs per parameter):
+
+- **Distance Traveled**: Highest sensitivity (6.4-6.8), most responsive to parameter variations
+- **PLE Energy**: High sensitivity (6.2-6.3), responds to both physical and cognitive parameters
+- **Collision Times**: Moderate-high sensitivity (5.8-6.2), higher in heterogeneous simulations
+- **Time Enabled**: Moderate sensitivity (6.0-6.1), consistent across simulation types
+
+*** Simulation Type Effects
+
+Heterogeneous populations amplify effects of P.2, P.4, P.5, P.8 (interaction-driven parameters), while homogeneous populations amplify P.7, P.10, P.11 (collective dynamics parameters). Overall differences are modest (< 2 pairs), with P.4 and P.8 maintaining high influence and P.6 maintaining null effect across both types.
+
+*** Practical Implications
+
+1. **Calibration priority**: Focus on Tier 1 parameters (P.2, P.4, P.8)
+2. **Parameter reduction**: P.6 can be fixed without loss of model fidelity
+3. **Computational efficiency**: Three-tier classification enables focused sensitivity analyses
+4. **Scenario design**: Consider population heterogeneity effects when selecting parameter configurations
+
 * Conclusions
 
 This comprehensive evaluation provides a complete quantitative assessment of COG parameter influence across 80 parameter-measurement-simulation-type combinations (10 PIDs × 4 metrics × 2 simulation types). Through integration of multiple analytical approaches, we establish robust findings about parameter importance in multi-agent evacuation simulations.
