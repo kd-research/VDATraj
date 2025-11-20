@@ -1,22 +1,11 @@
 # Common setup for comprehensive evaluation analysis
 # This file is sourced at the beginning of each code block in comprehensive_evaluation.org
 
-# Determine the directory of this script
-script_dir <- if (exists("ofile") && !is.null(ofile)) {
-  dirname(ofile)
-} else {
-  # Fallback: assume we're in project root or examples directory
-  if (file.exists("common_header.R")) {
-    "."
-  } else if (file.exists("examples/common_header.R")) {
-    "examples"
-  } else {
-    stop("Cannot find common_header.R")
-  }
-}
+# Load here package for path-independent sourcing
+if (!require("here", quietly = TRUE)) install.packages("here")
 
-# Source common header from the appropriate location
-source(file.path(script_dir, "common_header.R"), chdir = TRUE)
+# Source common header using here for path-independent resolution
+source(here::here("examples", "common_header.R"))
 
 #' Analyze a single dataset for impact variance
 #'
@@ -112,7 +101,7 @@ extract_sim_type <- function(db_path) {
 #'                Set to 1 to disable parallel processing
 #' @return Data frame with results for all parameter indices
 analyze_all_parameters <- function(sim_type, measure_column,
-                                   data_dir = "data", B = 1000, conf.level = 0.95,
+                                   data_dir = here::here("data"), B = 1000, conf.level = 0.95,
                                    n_cores = NULL) {
   # Find all database files matching the simulation type
   pattern <- paste0("cog_\\d+_", sim_type, "\\.sqlite3")
@@ -200,9 +189,9 @@ analyze_all_parameters <- function(sim_type, measure_column,
 #' @param force_refresh If TRUE, ignore cached results and recompute (default: FALSE)
 #' @return Data frame with results for all parameter indices
 analyze_all_parameters_cached <- function(sim_type, measure_column,
-                                          data_dir = "data", B = 1000, conf.level = 0.95,
+                                          data_dir = here::here("data"), B = 1000, conf.level = 0.95,
                                           n_cores = NULL,
-                                          cache_dir = "cache",
+                                          cache_dir = here::here("cache"),
                                           force_refresh = FALSE) {
   # Ensure cache directory exists
   if (!dir.exists(cache_dir)) {
@@ -277,7 +266,7 @@ analyze_all_parameters_cached <- function(sim_type, measure_column,
 #' @param cache_dir Directory containing cached results (default: "cache")
 #' @param pattern Optional pattern to match specific cache files (default: NULL, clears all)
 #' @return Number of files deleted
-clear_analysis_cache <- function(cache_dir = "cache", pattern = NULL) {
+clear_analysis_cache <- function(cache_dir = here::here("cache"), pattern = NULL) {
   if (!dir.exists(cache_dir)) {
     message("Cache directory does not exist: ", cache_dir)
     return(0)

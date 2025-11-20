@@ -1,4 +1,6 @@
-source("tests/setup.R")
+# Load here package for path-independent sourcing
+if (!require("here", quietly = TRUE)) install.packages("here")
+source(here::here("examples", "common_header.R"))
 
 # Example 1: Clear Parameter Control (h(x) = 2x + 5 + noise)
 set.seed(42)

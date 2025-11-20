@@ -1,8 +1,10 @@
-source("tests/setup.R")
+# Load here package for path-independent sourcing
+if (!require("here", quietly = TRUE)) install.packages("here")
+source(here::here("examples", "common_header.R"))
 
 # Example 3: Real trajectory data analysis using visual perception delay time and collision times
 cat("Loading real trajectory simulation data...\n")
-real_data <- get_data_from_db("data/cog_8_heterogeneous.sqlite3")
+real_data <- get_data_from_db(here::here("data", "cog_8_heterogeneous.sqlite3"))
 real_data <- prepare_varience_data(real_data)
 
 # Extract relevant columns for trajectory analysis

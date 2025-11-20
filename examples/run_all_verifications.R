@@ -1,10 +1,14 @@
-source("tests/setup.R")
+# Load here package for path-independent sourcing
+if (!require("here", quietly = TRUE)) install.packages("here")
+
+# Load common header (which loads all R modules and dependencies)
+source(here::here("examples", "common_header.R"))
 
 # Load all verification examples
-source("examples/01_controlled_example.R")
-source("examples/02_uncontrolled_example.R")
-source("examples/03_sinusoidal_example.R")
-source("examples/04_trajectory_example.R")
+source(here::here("examples", "01_controlled_example.R"))
+source(here::here("examples", "02_uncontrolled_example.R"))
+source(here::here("examples", "03_sinusoidal_example.R"))
+source(here::here("examples", "04_trajectory_example.R"))
 
 # Create a summary function to analyze any dataset with the variance decomposition method
 analyze_variance_decomposition <- function(df, base_param_col, truthy_param_col, random_param_col,

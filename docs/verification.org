@@ -34,14 +34,16 @@ The variance decomposition method leverages the law of total variance to quantif
 **Impact Variance**: The difference between these quantities directly quantifies parameter control magnitude.
 
 * Experiment 1: Positive Control - Linear Parameter Dependence
-#+PROPERTY: header-args:R :prologue "source(\"examples/01_controlled_example.R\");" :colnames yes
+#+PROPERTY: header-args:R :colnames yes
 
 ** Experimental Design
 This experiment establishes a positive control case where parameter influence is known to exist. We simulate a linear deterministic system with additive Gaussian noise to create a scenario with quantifiable parameter control.
 
 #+name: setup_controlled_example
 #+begin_src R :results output
-# Data loaded from prelude/controlled_example.R
+# data loaded from prelude/controlled_example.R
+library(here)
+source(here("examples", "01_controlled_example.R"))
 cat("Experiment 1: Linear Control System\n")
 cat("==================================\n")
 cat("Sample size:", nrow(controlled_df), "\n")
@@ -54,23 +56,12 @@ str(controlled_df)
 
 #+RESULTS: setup_controlled_example
 #+begin_example
-Cosine example data generated
-Function: h(x) = cos(x) + N(0, 0.64 )
-Parameter range: [ -6.28 , 6.28 ] ( 2 π)
-Expected: Zero correlation but strong parameter dependence!
-Loading real trajectory simulation data...
-Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
-Parameter: Visual perception delay time
-  Range: 0 to 1
-Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
 Experiment 1: Linear Control System
 ==================================
-Sample size: 1000
+Sample size: 1000 
 Parameter range: [ 0.002388966 , 9.984908 ]
 True model: h(x) = 2x + 5 + N(0, 1)
-Expected impact variance (theoretical): 67.94527
+Expected impact variance (theoretical): 67.94527 
 Data structure:
 'data.frame':	1000 obs. of  6 variables:
  $ base_params  : num  9.15 9.37 2.86 8.3 6.42 ...
@@ -86,6 +77,8 @@ Data structure:
 #+name: controlled_analysis
 #+begin_src R :results output :var setup_controlled_example=setup_controlled_example
 # Apply variance decomposition protocol
+library(here)
+source(here("examples", "01_controlled_example.R"))
 base_variance <- var(controlled_df$base_h)
 cat("Total measurement variance:", base_variance, "\n")
 
@@ -125,27 +118,16 @@ if (abs(observed_impact_variance - expected_impact_variance) / expected_impact_v
 
 #+RESULTS: controlled_analysis
 #+begin_example
-Cosine example data generated
-Function: h(x) = cos(x) + N(0, 0.64 )
-Parameter range: [ -6.28 , 6.28 ] ( 2 π)
-Expected: Zero correlation but strong parameter dependence!
-Loading real trajectory simulation data...
-Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
-Parameter: Visual perception delay time
-  Range: 0 to 1
-Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
-Total measurement variance: 35.24568
-Same parameter variance (2σ²): 2.068325
-Random parameter variance: 69.93089
-Observed impact variance: 67.86256
+Total measurement variance: 35.24568 
+Same parameter variance (2σ²): 2.068325 
+Random parameter variance: 69.93089 
+Observed impact variance: 67.86256 
 
 --- Theoretical Validation ---
-Expected noise component (2σ²): 2
-Expected signal component (2β²Var(X)): 67.94527
-Expected impact variance: 67.94527
-Observed impact variance: 67.86256
+Expected noise component (2σ²): 2 
+Expected signal component (2β²Var(X)): 67.94527 
+Expected impact variance: 67.94527 
+Observed impact variance: 67.86256 
 Relative error: 0.1217252 %
 ✓ VALIDATION SUCCESSFUL: Observed values match theoretical predictions
 #+end_example
@@ -153,7 +135,10 @@ Relative error: 0.1217252 %
 ** Visualization
 
 #+name: controlled_visualization
-#+begin_src R :results output graphics file :file ./outputs/plots/controlled_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/controlled_example_plot.png :width 1600 :height 1600 :res 200
+library(here)
+source(here("examples", "01_controlled_example.R"))
+
 # Compute difference variables for plotting
 same_param_differences <- controlled_df$base_h - controlled_df$truthy_h
 random_param_differences <- controlled_df$base_h - controlled_df$random_h
@@ -197,16 +182,19 @@ cat("Plot saved as controlled_example_plot.png")
 #+end_src
 
 #+RESULTS: controlled_visualization
-[[file:./outputs/plots/controlled_example_plot.png]]
+[[file:../outputs/plots/controlled_example_plot.png]]
 
 * Experiment 2: Negative Control - Parameter Independence
-#+PROPERTY: header-args:R :prologue "source(\"examples/02_uncontrolled_example.R\");" :colnames yes
+#+PROPERTY: header-args:R :colnames yes
 
 ** Experimental Design  
 This experiment establishes a negative control where parameters have no influence on measurements. We simulate a constant-output system where measurements are independent of input parameter values, providing validation that our method correctly identifies absence of parameter control.
 
 #+name: setup_uncontrolled_example
 #+begin_src R :results output
+library(here)
+source(here("examples", "02_uncontrolled_example.R"))
+
 # Data already loaded by prelude/uncontrolled_example.R
 print("Uncontrolled example data loaded from prelude")
 print(paste("Number of samples:", nrow(uncontrolled_df)))
@@ -218,17 +206,6 @@ str(uncontrolled_df)
 
 #+RESULTS: setup_uncontrolled_example
 #+begin_example
-Cosine example data generated
-Function: h(x) = cos(x) + N(0, 0.64 )
-Parameter range: [ -6.28 , 6.28 ] ( 2 π)
-Expected: Zero correlation but strong parameter dependence!
-Loading real trajectory simulation data...
-Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
-Parameter: Visual perception delay time
-  Range: 0 to 1
-Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
 [1] "Uncontrolled example data loaded from prelude"
 [1] "Number of samples: 1000"
 [1] "Parameter range: 0.00465349061414599 to 9.99404527945444"
@@ -247,6 +224,9 @@ Measurement: Collision times from trajectory simulations
 
 #+name: uncontrolled_analysis
 #+begin_src R :results output :var setup_uncontrolled_example=setup_uncontrolled_example
+library(here)
+source(here("examples", "02_uncontrolled_example.R"))
+
 # Same analysis as before
 base_variance <- var(uncontrolled_df$base_h)
 cat("Base variance Var(H):", base_variance, "\n")
@@ -283,34 +263,26 @@ if (abs(impact_variance) < 1.0) {
 
 #+RESULTS: uncontrolled_analysis
 #+begin_example
-Cosine example data generated
-Function: h(x) = cos(x) + N(0, 0.64 )
-Parameter range: [ -6.28 , 6.28 ] ( 2 π)
-Expected: Zero correlation but strong parameter dependence!
-Loading real trajectory simulation data...
-Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
-Parameter: Visual perception delay time
-  Range: 0 to 1
-Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
-Base variance Var(H): 4.077768
-Same parameter variance Var(H-H'|X=x): 7.697057
-Random parameter variance Var(H(X)-H'(X')): 8.073158
-Impact variance (difference): 0.3761011
+Base variance Var(H): 4.077768 
+Same parameter variance Var(H-H'|X=x): 7.697057 
+Random parameter variance Var(H(X)-H'(X')): 8.073158 
+Impact variance (difference): 0.3761011 
 
 --- Theoretical vs Observed ---
-Expected noise component (2σ²): 1.28
-Expected signal component (0): 0
-Expected impact variance (0): 0
-Observed impact variance: 0.3761011
+Expected noise component (2σ²): 8 
+Expected signal component (0): 0 
+Expected impact variance (0): 0 
+Observed impact variance: 0.3761011 
 ✓ SUCCESS: Method correctly identifies NO parameter control
 #+end_example
 
 ** Visualization
 
 #+name: uncontrolled_visualization
-#+begin_src R :results output graphics file :file ./outputs/plots/uncontrolled_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/uncontrolled_example_plot.png :width 1600 :height 1600 :res 200
+library(here)
+source(here("examples", "02_uncontrolled_example.R"))
+
 # Compute difference variables for plotting
 same_param_diff <- uncontrolled_df$base_h - uncontrolled_df$truthy_h
 random_param_diff <- uncontrolled_df$base_h - uncontrolled_df$random_h
@@ -354,16 +326,19 @@ cat("Plot saved as uncontrolled_example_plot.png")
 #+end_src
 
 #+RESULTS: uncontrolled_visualization
-[[file:./outputs/plots/uncontrolled_example_plot.png]]
+[[file:../outputs/plots/uncontrolled_example_plot.png]]
 
 * Experiment 3: Demonstrating Method Superiority - Non-Linear Relationships
-#+PROPERTY: header-args:R :prologue "source(\"examples/03_sinusoidal_example.R\");" :colnames yes
+#+PROPERTY: header-args:R :prologue :colnames yes
 
 ** Experimental Design  
 This experiment demonstrates a critical advantage of the variance decomposition method over traditional correlation analysis. We simulate a cosine relationship (h(x) = cos(x)) over a symmetric range around zero. Since cosine is an even function (cos(-x) = cos(x)), it has zero linear correlation over symmetric intervals but exhibits strong parameter dependence. This scenario perfectly demonstrates how correlation analysis completely fails while the impact variance method succeeds in detecting the clear functional relationship.
 
 #+name: setup_sinusoidal_example
 #+begin_src R :results output
+library(here)
+source(here("examples", "03_sinusoidal_example.R"))
+
 # Data loaded from prelude/sinusoidal_example.R
 cat("Experiment 3: Cosine Parameter Dependence\n")
 cat("=============================================\n")
@@ -381,16 +356,9 @@ Cosine example data generated
 Function: h(x) = cos(x) + N(0, 0.64 )
 Parameter range: [ -6.28 , 6.28 ] ( 2 π)
 Expected: Zero correlation but strong parameter dependence!
-Loading real trajectory simulation data...
-Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
-Parameter: Visual perception delay time
-  Range: 0 to 1
-Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
 Experiment 3: Cosine Parameter Dependence
 =============================================
-Sample size: 1000
+Sample size: 1000 
 Parameter range: [ -6.28 , 6.27 ] radians
 True model: h(x) = cos(x) + N(0, 0.64)
 Key insight: Even function → Zero correlation but strong parameter dependence
@@ -408,6 +376,9 @@ Data structure:
 
 #+name: sinusoidal_analysis
 #+begin_src R :results output :var setup_sinusoidal_example=setup_sinusoidal_example
+library(here)
+source(here("examples", "03_sinusoidal_example.R"))
+
 # Apply variance decomposition protocol
 base_variance <- var(sinusoidal_df$base_h)
 cat("Total measurement variance:", base_variance, "\n")
@@ -457,18 +428,11 @@ Cosine example data generated
 Function: h(x) = cos(x) + N(0, 0.64 )
 Parameter range: [ -6.28 , 6.28 ] ( 2 π)
 Expected: Zero correlation but strong parameter dependence!
-Loading real trajectory simulation data...
-Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
-Parameter: Visual perception delay time
-  Range: 0 to 1
-Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
-Total measurement variance: 1.133996
-Same parameter variance (2σ²): 1.200169
-Random parameter variance: 2.241364
-Observed impact variance: 1.041195
-Direct linear correlation: 0.0089
+Total measurement variance: 1.133996 
+Same parameter variance (2σ²): 1.200169 
+Random parameter variance: 2.241364 
+Observed impact variance: 1.041195 
+Direct linear correlation: 0.0089 
 
 === METHOD COMPARISON ===
 Traditional Correlation Analysis:
@@ -486,7 +450,10 @@ for detecting non-linear parameter relationships!
 ** Visualization: Revealing Hidden Relationships
 
 #+name: cosine_visualization
-#+begin_src R :results output graphics file :file ./outputs/plots/cosine_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/cosine_example_plot.png :width 1600 :height 1600 :res 200
+library(here)
+source(here("examples", "03_sinusoidal_example.R"))
+
 # Compute difference variables and correlation for plotting
 same_param_differences <- sinusoidal_df$base_h - sinusoidal_df$truthy_h
 random_param_differences <- sinusoidal_df$base_h - sinusoidal_df$random_h
@@ -545,16 +512,19 @@ cat("Cosine analysis plots saved as cosine_example_plot.png")
 #+end_src
 
 #+RESULTS: cosine_visualization
-[[file:./outputs/plots/cosine_example_plot.png]]
+[[file:../outputs/plots/cosine_example_plot.png]]
 
 * Experiment 4: Applied Case Study - Trajectory Dynamics
-#+PROPERTY: header-args:R :prologue "source(\"examples/04_trajectory_example.R\");" :colnames yes
+#+PROPERTY: header-args:R :colnames yes
 
 ** Experimental Design
 This experiment applies the variance decomposition method to real trajectory simulation data, demonstrating practical application in a complex, multi-agent system. We analyze the relationship between visual perception delay time (input parameter) and collision times (output measurement) to assess parameter influence in realistic simulation conditions.
 
 #+name: setup_trajectory_example
 #+begin_src R :results output
+library(here)
+source(here("examples", "04_trajectory_example.R"))
+
 # Data already loaded by prelude/trajectory_example.R  
 print("Real trajectory analysis data loaded from prelude")
 print(paste("Number of simulation runs:", nrow(trajectory_df)))
@@ -567,36 +537,35 @@ str(trajectory_df)
 
 #+RESULTS: setup_trajectory_example
 #+begin_example
-Cosine example data generated
-Function: h(x) = cos(x) + N(0, 0.64 )
-Parameter range: [ -6.28 , 6.28 ] ( 2 π)
-Expected: Zero correlation but strong parameter dependence!
 Loading real trajectory simulation data...
 Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
+Dataset contains 150000 simulation runs
 Parameter: Visual perception delay time
-  Range: 0 to 1
+  Range: 0 to 1 
 Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
+  Range: 0 to 144 
 [1] "Real trajectory analysis data loaded from prelude"
-[1] "Number of simulation runs: 15000"
+[1] "Number of simulation runs: 150000"
 [1] "Visual perception delay time range: 0 to 1"
 [1] "Measurement: Collision times from trajectory simulations"
 [1] "Research question: Does visual perception delay time influence collision outcomes?"
 [1] "Data structure:"
-'data.frame':	15000 obs. of  6 variables:
+'data.frame':	150000 obs. of  6 variables:
  $ base_delay_time       : num  0.3789 0.0771 0.4353 0.4916 0.9447 ...
  $ truthy_delay_time     : num  0.3789 0.0771 0.4353 0.4916 0.9447 ...
- $ random_delay_time     : num  0.0981 0.1237 0.4668 0.6431 0.0339 ...
+ $ random_delay_time     : num  0.96 0.711 0.714 0.015 0.956 ...
  $ base_collision_times  : num  31 33 59 73 56 30 61 68 77 93 ...
- $ truthy_collision_times: num  41 58 114 114 45 31 97 96 53 48 ...
- $ random_collision_times: num  62 37 27 112 71 32 39 39 34 70 ...
+ $ truthy_collision_times: num  97 73 45 54 68 47 93 48 39 27 ...
+ $ random_collision_times: num  67 63 50 32 30 46 45 43 48 42 ...
 #+end_example
 
 ** Statistical Analysis of Real Trajectory Data
 
 #+name: trajectory_analysis
 #+begin_src R :results output :var setup_trajectory_example=setup_trajectory_example
+library(here)
+source(here("examples", "04_trajectory_example.R"))
+
 # Apply variance decomposition method to real simulation data
 base_variance <- var(trajectory_df$base_collision_times)
 cat("Base variance Var(collision_times):", round(base_variance, 3), "\n")
@@ -640,37 +609,36 @@ cat("Collision times statistics: Mean =", round(mean(trajectory_df$base_collisio
 
 #+RESULTS: trajectory_analysis
 #+begin_example
-Cosine example data generated
-Function: h(x) = cos(x) + N(0, 0.64 )
-Parameter range: [ -6.28 , 6.28 ] ( 2 π)
-Expected: Zero correlation but strong parameter dependence!
 Loading real trajectory simulation data...
 Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
+Dataset contains 150000 simulation runs
 Parameter: Visual perception delay time
-  Range: 0 to 1
+  Range: 0 to 1 
 Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
-Base variance Var(collision_times): 634.751
-Same parameter variance: 875.017
-Random parameter variance: 1131.696
-Impact variance (delay time effect): 256.679
-Direct correlation (delay_time vs collision_times): 0.355
+  Range: 0 to 144 
+Base variance Var(collision_times): 634.713 
+Same parameter variance: 877.894 
+Random parameter variance: 1140.864 
+Impact variance (delay time effect): 262.971 
+Direct correlation (delay_time vs collision_times): 0.355 
 
 --- Analysis Results ---
 ✓ SIGNIFICANT: Visual perception delay time influences collision times
   Impact variance indicates meaningful parameter control
-  Effect size:  0.29 x simulation noise
+  Effect size:  0.3 x simulation noise
 
 Descriptive Statistics:
-Delay time statistics: Mean = 0.498 , SD = 0.29
-Collision times statistics: Mean = 54 , SD = 25.2
+Delay time statistics: Mean = 0.498 , SD = 0.29 
+Collision times statistics: Mean = 54 , SD = 25.2 
 #+end_example
 
 ** Real Data Visualization
 
 #+name: trajectory_visualization
-#+begin_src R :results output graphics file :file ./outputs/plots/trajectory_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/trajectory_example_plot.png :width 1600 :height 1600 :res 200
+library(here)
+source(here("examples", "04_trajectory_example.R"))
+
 # Compute difference variables for plotting
 same_param_diff <- trajectory_df$base_collision_times - trajectory_df$truthy_collision_times
 random_param_diff <- trajectory_df$base_collision_times - trajectory_df$random_collision_times
@@ -721,15 +689,18 @@ cat("Real trajectory analysis plots saved as trajectory_example_plot.png")
 #+end_src
 
 #+RESULTS: trajectory_visualization
-[[file:./outputs/plots/trajectory_example_plot.png]]
+[[file:../outputs/plots/trajectory_example_plot.png]]
 
 * Comprehensive Results and Method Validation
-#+PROPERTY: header-args:R :prologue "source(\"examples/run_all_verifications.R\");" :colnames yes
+#+PROPERTY: header-args:R :colnames yes
 
 ** Cross-Experiment Performance Summary
 
 #+name: summary_comparison
 #+begin_src R :results output
+library(here)
+source(here("examples", "run_all_verifications.R"))
+
 cat("=== COMPREHENSIVE METHOD VALIDATION RESULTS ===\n")
 cat("Systematic verification across controlled experimental conditions\n\n")
 
@@ -785,11 +756,11 @@ Parameter range: [ -6.28 , 6.28 ] ( 2 π)
 Expected: Zero correlation but strong parameter dependence!
 Loading real trajectory simulation data...
 Real trajectory analysis setup complete
-Dataset contains 15000 simulation runs
+Dataset contains 150000 simulation runs
 Parameter: Visual perception delay time
-  Range: 0 to 1
+  Range: 0 to 1 
 Measurement: Collision times from trajectory simulations
-  Range: 0 to 144
+  Range: 0 to 144 
 === COMPREHENSIVE METHOD VALIDATION RESULTS ===
 Systematic verification across controlled experimental conditions
 
@@ -811,7 +782,7 @@ Experiment 3 - Cosine Relationship (correlation fails, impact variance succeeds)
   → Demonstrates superiority of variance decomposition method!
 
 Experiment 4 - Real Trajectory Analysis (delay time vs collision times):
-  Impact Variance: 256.679
+  Impact Variance: 262.971
   Direct Correlation: 0.3550
   Result: Significant parameter influence detected ✓
 

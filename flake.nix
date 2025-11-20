@@ -31,6 +31,7 @@
             RSQLite
             jsonlite
             dplyr
+            here
             DBI
             # Additional useful packages for data analysis
             ggplot2
