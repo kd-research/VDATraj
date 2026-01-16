@@ -22,7 +22,7 @@ Determining whether simulation input parameters have meaningful effects on outpu
 We analyze a comprehensive dataset containing simulation trajectory results. The dataset structure includes the following variables:
 
 #+name: dataframe_description
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/dataframe_description.R
 source("tests/test_sample.R")
 # Display variable names from the loaded dataset
 cat("Dataset Variables (Sorted Alphabetically):\n")
@@ -61,7 +61,7 @@ Total number of variables: 15
 The dataset represents simulation results where each row corresponds to a single trajectory. Each trajectory is generated using a specific input parameter value and produces multiple output measurements. This experimental design allows us to study the relationship between input parameters and output variability.
 
 #+name: base_log_content
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/base_log_content.R
 source("tests/test_sample.R")
 # Display sample of base experiment data
 cat("Sample Base Experiment Data (First 2 Rows):\n")
@@ -108,7 +108,7 @@ Our experimental methodology employs a triple replication design to isolate diff
 3. **Random Parameter Replica**: Replication using randomly sampled parameters from the same distribution to capture combined noise and parameter effects
 
 #+name: focused_time_columns
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/focused_time_columns.R
 source("tests/generate_test_data.R")
 # Identify parameter and time-related columns
 parameter_columns <- grep("Parameters$", names(test_df), value=TRUE)
@@ -129,7 +129,7 @@ cat(sprintf("\nTotal focused columns: %d\n", length(focused_columns)))
 #+end_src
 
 #+name: replica_view
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/replica_view.R
 source("tests/generate_test_data.R")
 # Display parameter/time data for first 2 trajectories
 # Identify parameter and time-related columns
@@ -191,7 +191,7 @@ Column Explanation:
 The experimental design assumes input parameters follow a uniform distribution over their defined range. While we can compute the variance of each output measurement, direct comparison yields limited insights since all experimental conditions follow the same parameter distribution. This motivates our variance decomposition approach.
 
 #+name: measure_variance_check
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/measure_variance_check.R
 source("tests/generate_test_data.R")
 # Calculate variance for parameter and time columns
 # Identify parameter and time-related columns
@@ -242,7 +242,7 @@ Key Observations:
 #+end_example
 
 #+name: brief_t_test
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/brief_t_test.R
 source("tests/generate_test_data.R")
 # Perform t-test comparing base vs random parameter measurements
 cat("Statistical Comparison: Base vs Random Parameter Measurements\n")
@@ -544,7 +544,7 @@ DECISION:
 The total variance of the primary measurement (agent_time_enabled):
 
 #+name: base-variation
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/base_variation.R
 source("tests/test_sample.R")
 # Calculate total variance of base experiment measurements
 base_variance <- var(test_df$baseLog.agent_time_enableds)
@@ -569,7 +569,7 @@ cat("across all trajectories in the base experiment.\n")
 Variance of differences between identical parameter replications (pure noise):
 
 #+name: replica-variation
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/replica_variation.R
 source("tests/generate_test_data.R")
 # Calculate variance of differences between identical parameter replications
 # Calculate difference between base and truthy (identical parameter) measurements
@@ -611,7 +611,7 @@ Interpretation:
 Variance of differences between random parameter replications (noise + signal):
 
 #+name: random-variation
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/random_variation.R
 source("tests/generate_test_data.R")
 # Calculate variance of differences between random parameter replications
 # Calculate difference between base and random parameter measurements
@@ -653,7 +653,7 @@ Interpretation:
 The impact variance, representing parameter influence on measurements:
 
 #+name: impact-variance-calculation
-#+begin_src R :results output :dir ../
+#+begin_src R :results output :dir ../ :tangle theory/impact_variance_calculation.R
 source("tests/generate_test_data.R")
 # Calculate and interpret impact variance
 # Calculate all variance components

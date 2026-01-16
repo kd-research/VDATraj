@@ -82,7 +82,7 @@ These parameter ranges define the experimental space over which the variance dec
 ** Agent Time Enabled
 
 #+name: hetero_time_enabled
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/hetero_time_enabled.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - agent time enabled
@@ -120,7 +120,7 @@ results %>%
 ** Collision Times
 
 #+name: hetero_collision_times
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/hetero_collision_times.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - collision times
@@ -158,7 +158,7 @@ results %>%
 ** Distance Traveled
 
 #+name: hetero_distance_traveled
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/hetero_distance_traveled.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - distance traveled
@@ -196,7 +196,7 @@ results %>%
 ** PLE Energy
 
 #+name: hetero_ple_energy
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/hetero_ple_energy.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for heterogeneous simulations - PLE energy
@@ -236,7 +236,7 @@ results %>%
 ** Agent Time Enabled
 
 #+name: homo_time_enabled
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/homo_time_enabled.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - agent time enabled
@@ -274,7 +274,7 @@ results %>%
 ** Collision Times
 
 #+name: homo_collision_times
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/homo_collision_times.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - collision times
@@ -312,7 +312,7 @@ results %>%
 ** Distance Traveled
 
 #+name: homo_distance_traveled
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/homo_distance_traveled.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - distance traveled
@@ -350,7 +350,7 @@ results %>%
 ** PLE Energy
 
 #+name: homo_ple_energy
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/homo_ple_energy.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze all parameters for homogeneous simulations - PLE energy
@@ -390,7 +390,7 @@ results %>%
 This section provides a quick overview of parameter significance across all simulation conditions and measurements.
 
 #+name: significance_summary
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/significance_summary.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Run all 8 analyses in parallel
@@ -497,7 +497,7 @@ This section provides grouped bar plots comparing effect sizes across all measur
 *** Heterogeneous Simulations - Effect Size by Parameter
 
 #+name: plot_effect_size_heterogeneous
-#+begin_src R :results output graphics file :file outputs/plots/effect_size_heterogeneous.png :width 1200 :height 700
+#+begin_src R :results output graphics file :file outputs/plots/effect_size_heterogeneous.png :width 1200 :height 700 :tangle comprehensive_evaluation/plot_effect_size_heterogeneous.R
 source("examples/comprehensive_analysis_setup.R")
 library(ggplot2)
 library(dplyr)
@@ -583,7 +583,7 @@ print(p)
 *** Homogeneous Simulations - Effect Size by Parameter
 
 #+name: plot_effect_size_homogeneous
-#+begin_src R :results output graphics file :file outputs/plots/effect_size_homogeneous.png :width 1200 :height 700
+#+begin_src R :results output graphics file :file outputs/plots/effect_size_homogeneous.png :width 1200 :height 700 :tangle comprehensive_evaluation/plot_effect_size_homogeneous.R
 source("examples/comprehensive_analysis_setup.R")
 library(ggplot2)
 library(dplyr)
@@ -726,7 +726,7 @@ The physical repulsion coefficient for pedestrian interactions shows no signific
 ** Summary Statistics Across All Conditions
 
 #+name: summary_statistics
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/summary_statistics.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Combine all results for comparative analysis using parallel processing
@@ -817,7 +817,7 @@ summary_df
 ** Parameter Ranking by Average Effect
 
 #+name: parameter_ranking
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/parameter_ranking.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Rank parameters by their average impact across all measurements and simulation types
@@ -913,7 +913,7 @@ parameter_ranking
 ** Measurement Sensitivity Analysis
 
 #+name: measurement_sensitivity
-#+begin_src R
+#+begin_src R :tangle comprehensive_evaluation/measurement_sensitivity.R
 source("examples/comprehensive_analysis_setup.R")
 
 # Analyze which measurements are most sensitive to parameter variations

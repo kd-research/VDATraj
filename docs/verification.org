@@ -40,7 +40,7 @@ The variance decomposition method leverages the law of total variance to quantif
 This experiment establishes a positive control case where parameter influence is known to exist. We simulate a linear deterministic system with additive Gaussian noise to create a scenario with quantifiable parameter control.
 
 #+name: setup_controlled_example
-#+begin_src R :results output
+#+begin_src R :results output :tangle verification/setup_controlled_example.R
 # data loaded from prelude/controlled_example.R
 library(here)
 source(here("examples", "01_controlled_example.R"))
@@ -75,7 +75,7 @@ Data structure:
 ** Statistical Analysis and Results  
 
 #+name: controlled_analysis
-#+begin_src R :results output :var setup_controlled_example=setup_controlled_example
+#+begin_src R :results output :var setup_controlled_example=setup_controlled_example :tangle verification/controlled_analysis.R
 # Apply variance decomposition protocol
 library(here)
 source(here("examples", "01_controlled_example.R"))
@@ -135,7 +135,7 @@ Relative error: 0.1217252 %
 ** Visualization
 
 #+name: controlled_visualization
-#+begin_src R :results output graphics file :file ../outputs/plots/controlled_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/controlled_example_plot.png :width 1600 :height 1600 :res 200 :tangle verification/controlled_visualization.R
 library(here)
 source(here("examples", "01_controlled_example.R"))
 
@@ -191,7 +191,7 @@ cat("Plot saved as controlled_example_plot.png")
 This experiment establishes a negative control where parameters have no influence on measurements. We simulate a constant-output system where measurements are independent of input parameter values, providing validation that our method correctly identifies absence of parameter control.
 
 #+name: setup_uncontrolled_example
-#+begin_src R :results output
+#+begin_src R :results output :tangle verification/setup_uncontrolled_example.R
 library(here)
 source(here("examples", "02_uncontrolled_example.R"))
 
@@ -223,7 +223,7 @@ str(uncontrolled_df)
 ** Analysis of Uncontrolled Example
 
 #+name: uncontrolled_analysis
-#+begin_src R :results output :var setup_uncontrolled_example=setup_uncontrolled_example
+#+begin_src R :results output :var setup_uncontrolled_example=setup_uncontrolled_example :tangle verification/uncontrolled_analysis.R
 library(here)
 source(here("examples", "02_uncontrolled_example.R"))
 
@@ -279,7 +279,7 @@ Observed impact variance: 0.3761011
 ** Visualization
 
 #+name: uncontrolled_visualization
-#+begin_src R :results output graphics file :file ../outputs/plots/uncontrolled_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/uncontrolled_example_plot.png :width 1600 :height 1600 :res 200 :tangle verification/uncontrolled_visualization.R
 library(here)
 source(here("examples", "02_uncontrolled_example.R"))
 
@@ -335,7 +335,7 @@ cat("Plot saved as uncontrolled_example_plot.png")
 This experiment demonstrates a critical advantage of the variance decomposition method over traditional correlation analysis. We simulate a cosine relationship (h(x) = cos(x)) over a symmetric range around zero. Since cosine is an even function (cos(-x) = cos(x)), it has zero linear correlation over symmetric intervals but exhibits strong parameter dependence. This scenario perfectly demonstrates how correlation analysis completely fails while the impact variance method succeeds in detecting the clear functional relationship.
 
 #+name: setup_sinusoidal_example
-#+begin_src R :results output
+#+begin_src R :results output :tangle verification/setup_sinusoidal_example.R
 library(here)
 source(here("examples", "03_sinusoidal_example.R"))
 
@@ -375,7 +375,7 @@ Data structure:
 ** Statistical Analysis and Method Comparison
 
 #+name: sinusoidal_analysis
-#+begin_src R :results output :var setup_sinusoidal_example=setup_sinusoidal_example
+#+begin_src R :results output :var setup_sinusoidal_example=setup_sinusoidal_example :tangle verification/sinusoidal_analysis.R
 library(here)
 source(here("examples", "03_sinusoidal_example.R"))
 
@@ -450,7 +450,7 @@ for detecting non-linear parameter relationships!
 ** Visualization: Revealing Hidden Relationships
 
 #+name: cosine_visualization
-#+begin_src R :results output graphics file :file ../outputs/plots/cosine_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/cosine_example_plot.png :width 1600 :height 1600 :res 200 :tangle verification/cosine_visualization.R
 library(here)
 source(here("examples", "03_sinusoidal_example.R"))
 
@@ -521,7 +521,7 @@ cat("Cosine analysis plots saved as cosine_example_plot.png")
 This experiment applies the variance decomposition method to real trajectory simulation data, demonstrating practical application in a complex, multi-agent system. We analyze the relationship between visual perception delay time (input parameter) and collision times (output measurement) to assess parameter influence in realistic simulation conditions.
 
 #+name: setup_trajectory_example
-#+begin_src R :results output
+#+begin_src R :results output :tangle verification/setup_trajectory_example.R
 library(here)
 source(here("examples", "04_trajectory_example.R"))
 
@@ -562,7 +562,7 @@ Measurement: Collision times from trajectory simulations
 ** Statistical Analysis of Real Trajectory Data
 
 #+name: trajectory_analysis
-#+begin_src R :results output :var setup_trajectory_example=setup_trajectory_example
+#+begin_src R :results output :var setup_trajectory_example=setup_trajectory_example :tangle verification/trajectory_analysis.R
 library(here)
 source(here("examples", "04_trajectory_example.R"))
 
@@ -635,7 +635,7 @@ Collision times statistics: Mean = 54 , SD = 25.2
 ** Real Data Visualization
 
 #+name: trajectory_visualization
-#+begin_src R :results output graphics file :file ../outputs/plots/trajectory_example_plot.png :width 1600 :height 1600 :res 200
+#+begin_src R :results output graphics file :file ../outputs/plots/trajectory_example_plot.png :width 1600 :height 1600 :res 200 :tangle verification/trajectory_visualization.R
 library(here)
 source(here("examples", "04_trajectory_example.R"))
 
@@ -697,7 +697,7 @@ cat("Real trajectory analysis plots saved as trajectory_example_plot.png")
 ** Cross-Experiment Performance Summary
 
 #+name: summary_comparison
-#+begin_src R :results output
+#+begin_src R :results output :tangle verification/summary_comparison.R
 library(here)
 source(here("examples", "run_all_verifications.R"))
 

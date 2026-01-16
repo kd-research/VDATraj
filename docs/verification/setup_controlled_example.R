@@ -1,0 +1,11 @@
+# data loaded from prelude/controlled_example.R
+library(here)
+source(here("examples", "01_controlled_example.R"))
+cat("Experiment 1: Linear Control System\n")
+cat("==================================\n")
+cat("Sample size:", nrow(controlled_df), "\n")
+cat("Parameter range: [", min(controlled_df$base_params), ",", max(controlled_df$base_params), "]\n")
+cat("True model: h(x) = 2x + 5 + N(0, 1)\n")
+cat("Expected impact variance (theoretical):", 2 * 4 * var(controlled_df$base_params), "\n")
+cat("Data structure:\n")
+str(controlled_df)
