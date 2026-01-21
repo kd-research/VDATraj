@@ -203,7 +203,7 @@ Rscript tests/run_unit_tests.R
 
 The processed simulation data (SQLite databases) is available on Google Drive:
 
-**Download link:** [Google Drive - cog-merged.zip](https://drive.google.com/file/d/18oVylf5ZnFshUNEOTzTCPEv0EXBIfVvU/view?usp=sharing)
+**Download link:** [Google Drive - cog-merged.tar.xz](https://drive.google.com/file/d/18oVylf5ZnFshUNEOTzTCPEv0EXBIfVvU/view?usp=sharing)
 
 ### Setup
 
@@ -211,8 +211,8 @@ The processed simulation data (SQLite databases) is available on Google Drive:
 # Remove the symlink (if exists)
 rm -f data
 
-# Download cog-merged.zip from Google Drive, extract, and rename
-unzip cog-merged.zip
+# Download cog-merged.tar.xz from Google Drive, extract, and rename
+tar -xJf cog-merged.tar.xz
 mv cog-merged data
 ```
 
