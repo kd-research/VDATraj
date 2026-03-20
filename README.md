@@ -1,4 +1,4 @@
-# find-variance
+# VDA: A Replication-based Variance Decomposition Analysis
 
 Variance decomposition analysis for simulation parameter impact assessment. This project implements a bootstrap-based hypothesis testing framework to determine whether input parameters have statistically significant influence on multi-agent simulation outputs.
 
