@@ -89,7 +89,7 @@
 
         # Checks - run testthat unit tests
         checks.default = pkgs.stdenv.mkDerivation {
-          name = "find-variance-tests";
+          name = "vdatraj-tests";
           src = ./.;
 
           buildInputs = [ rEnv ];

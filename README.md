@@ -12,7 +12,7 @@ The core statistical approach compares variance between:
 ## Project Structure
 
 ```
-find-variance/
+vdatraj/
 ├── R/                          # Core R modules
 │   ├── parsers.R               # Parse log strings, JSON arrays
 │   ├── database.R              # SQLite queries and data retrieval
@@ -61,7 +61,7 @@ This is the recommended approach for full reproducibility. The project uses:
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd find-variance
+cd vdatraj
 
 # Set up data directory (see Data section below)
 rm -f data  # Remove symlink if exists
@@ -149,7 +149,7 @@ All R scripts extracted from org files are committed to the repository in:
 All scripts should be run from the **project root directory** to ensure the `here` package resolves paths correctly.
 
 ```bash
-cd find-variance  # project root
+cd vdatraj  # project root
 
 # Run verification experiments
 Rscript docs/verification/setup_controlled_example.R
@@ -180,7 +180,7 @@ Rscript docs/comprehensive_evaluation/significance_summary.R
 The `examples/` directory contains self-contained scripts that can be run directly:
 
 ```bash
-cd find-variance  # project root
+cd vdatraj  # project root
 
 # Run individual examples
 Rscript examples/01_controlled_example.R
@@ -195,7 +195,7 @@ Rscript examples/run_all_verifications.R
 #### Running Unit Tests
 
 ```bash
-cd find-variance
+cd vdatraj
 Rscript tests/run_unit_tests.R
 ```
 
